@@ -1,0 +1,141 @@
+Macro 11 Syntax
+
+Each line contains a single assembly language statement, up to 132 characters
+	-statement must be completed on one source line
+
+[] 	= enclosed argument is optional
+{} 	= zero or more repeated occurrences of item
+
+A line is one of the following
+	nothing
+	[{label}]	[Operator {Operand}] [comment]
+	symbol=[=]	expression			//direct assignment
+
+Label
+A label is any sequence of the following legal characters, followed by a ":",
+followed by an optional ":" for a globabl label
+	A through Z 
+		Question: are lower case characters allowed?
+			Answer: Yes, but they are converted to uppercase in the
+			assembling process
+	0 through 9
+	. (period)
+	$ (dollar sign)
+
+
+	-More than one label may appear within a single label field
+	-a label may be any length, however only the first 6 characters are 
+	significant, and must be unique among all the labels in the source
+
+Operator
+An operator consists of one of the following;
+	Instruction Mnenonic (op code)
+		-Is a symbol matching a particular opcode in the Permanent 
+		Symbol table (PST).
+	Assembler Directive
+		-Is a symbol matching a particular macro-11 directive in 
+		the PST.
+	Macro Call
+		-Is a symbol matching a particular macro symbol defined in the
+		macro symbol table (previously defined by a .MACRO directive 
+		(or included within the source program in an .MCALL directive)
+	-An operator is terminated by a space, tab, or any non-RAD50 character
+	(anything not 0-9, A-Z,.,$,%)
+		ex. MOV@A,B is legal
+
+
+Operand
+An operand specifies those program variables that are to be evaluated/
+manipulated by the operator. An operand may also be used to supply arguments
+to MACRO-11 directives and Macro calls.
+
+The operator and operand fields are interdependent; each field is evaluated
+in the context of the other. Therefore the syntax of operands are discussed
+in the context of each type of operator
+
+	Instruction Mnemonic
+		-Associated operands are always expressions
+	Assembler Directive
+		-Associate operands are normally symbolic arguments
+	Macro Call
+		-Associate operands are normally symbolic arguments
+
+	-The operand field is terminated by the beginning of the comment field,
+	or by the end of the source line.
+
+
+	Term
+	A term is a component of an expression and may be one of the following
+	1) A literal (number), whose 16-bit value is used
+	2) A symbol, evaluated as follows
+		a) A "." causes the value of the current location counter to be
+		used
+		b) A defined symbol is located in the User-Defined Symbol table
+		(UST) and its value is used
+		c) A permament symbol's basic value is used, with zero substituted
+		for the addressing modes
+			Note: Does this mean ADC ADC(R4) is legal?
+		d) An undefined symbol is assigned a value of zero and inserted
+		into the UST.
+	3) An ASCII conversion operation is performed
+		Note: Look at 6.3.3 for details
+	4) A term may be an expression enclosed in angle brackets (<>). Any
+	expression so enclosed is evaluated and reduced to a single term before
+	the remainder of the expression is evaluated.
+		
+
+	Expression
+	An expression is a combination of terms joined together by binary operators 
+	(see below) and which reduce to a 16-bit expression value.
+
+	An expression value may be any one of four types:
+
+		absolute:	An expression whose terms are numbers and ASCII
+			   	conversion characters will reduce to an absolute
+			   	value.
+
+		relocatable('):	An expression whose value is fixed relative to
+				the base address of the program section in which
+				it appears, but will have an offset value added
+				at task build time. 
+
+		external(G)	An expression whose terms contain one global
+				reference that is not defined within the
+				current program section.
+
+		complex relocatable(C):
+				An expression in which any of the following
+				conditions apply:
+				-It contains a global reference and a relocatable
+				symbol
+				-It contains more than one global reference
+				-It contains relocatable terms belonging to
+				different program sections
+				-The value resulting from the expression has
+				more than one level of relocation
+				-An operation other than addition is specified
+				on an undefined globabl symbol
+				-An operation other than addition, subraction,
+				negation, or complementation is specified for a
+				relocatable value.
+
+		The evaluation of relocatable, external, and complex relocatable
+		expressions is completed at link time.
+
+
+		-Expressions are evaluated left to right with no operator 
+		hierarchy values, except that unary operators take precedence
+		over binary operators.
+		-Spaces within expressions are ignored
+
+
+Comment
+A comment begins with a ";" and can contain any ASCII characters except
+NULL, RUBOUT, CARRIAGE-RETURN, LINE-FEED, VERTICAL-TAB, FORM-FEED. A comment
+extends through the end of the line.
+
+
+Direct Assignment Statement
+A direct assignment statement allows you to equate a symbol to a specific value.
+When a direct assignment statement is first used to define a symbol, that symbol
+is entered into the User-Defined symbol table.

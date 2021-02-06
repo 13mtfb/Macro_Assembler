@@ -1,0 +1,29 @@
+Assembler Construction
+
+Two pass assembler
+	Pass 1
+	-Locate and read all required macros from libraries
+	-Build symbol tables and program section tables
+	-Rudimentary assembling of each source statement
+
+	Pass 2
+	-Generate machine code instructions
+	-Use symbol table to resolve reference (in following order)
+		1) Macro symbol table
+		2) Permanent symbol table
+		3) User-defined symbol table
+	-Flag errors
+	-Generate assembly listing
+
+
+Permament Symbol Table Specification
+
+
+Macro Symbol Table Specification
+
+
+User-Define Symbol Table Specification
+
+
+Object Module Specification
+
