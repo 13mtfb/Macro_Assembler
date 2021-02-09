@@ -59,10 +59,6 @@ char misellaneous[] = {
 							'\0'	// end of array
 };
 
-char double_operand[] = {
-							'\0'	// end of array
-};
-
 char condition_code[] = {
 							'\0'	// end of array
 };
@@ -71,5 +67,4 @@ char condition_code[] = {
 
 char macro_directive[] = {
 							'\0'	//end of array
-}
-
+};
