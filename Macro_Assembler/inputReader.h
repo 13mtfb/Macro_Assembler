@@ -1,6 +1,7 @@
 #pragma once
 #include "sstream"
 #include "fstream"
+#include <string>
 
 using namespace std;
 
@@ -13,5 +14,6 @@ private:
 	fstream file;						// file stream
 	string current_line;				// string to hold current line
 	int current_pos;					// current character position in line
+	int next_pos;						// next position of substring
 	string SEPARATING_CHARACTERS = " ,\t;";//
 };

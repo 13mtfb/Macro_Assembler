@@ -1,3 +1,6 @@
 MOV R1, R2	;comment
-ADC R3,R4 
-ROR R5,R6
+MOV;comment only
+;comment only
+ADC R3,R4
+;comment only
+TST R4,R5,R6

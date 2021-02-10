@@ -35,7 +35,7 @@ char single_operand[] = {	'CLR',	// clear			X050DD
 							'SWAB',	// swap bytes		0003DD
 							'ADC',	// add carry		X055DD
 							'COM',	// subtract carry	X056DD
-							'COM',	// signe extend		0067DD
+							'STX',	// sign extend		0067DD
 							'\0'	// end of array
 };
 

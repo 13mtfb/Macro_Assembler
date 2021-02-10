@@ -24,6 +24,9 @@
     <ClInclude Include="inputReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
