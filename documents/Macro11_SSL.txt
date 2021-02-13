@@ -1,0 +1,183 @@
+S/SL Syntax:
+	: 	Declaration
+	{}	Loop statement
+	>	Loop exit
+	[]	case/if statement
+	|	case/if alternative
+	@	call statement
+	>>	return statement
+
+	rules
+	-Called using the action @
+	-return using the >> action, or by falling off the end of the rule
+
+	actions
+	Call	@	-call
+	Return	>>	-return
+	Input	x	-recognize an input token (i.e. process input token from stream)
+	Emit	.x	-generate an output token
+	Error	#x	-generate an error token
+	Cycle	{}	-loop
+	Exit	>	-exit a cycle loop
+	Choice	[]	-choose between a set of actions
+
+		Input Action
+		-implicit; token may be specified in one of three forms
+			-symbolic name (e.g. pColonEquals)
+			-string synonym (e.g. ':=')
+			-wilcard (matching any next input token (?))
+
+
+
+
+input:			%input token definitions
+ letter (a-z, A
+
+output:			%output token definitions
+
+
+type Type:		%type constant definitions
+
+
+mechanism Mechanism:	%semantic mechanism operation definitions
+	oPushCharacter
+		%save character to the current stack
+	oChooseOperator >> type
+		%pop the character stack and search the MST, or PST and return
+		pOpCode (along with type), pAssemblerDirective, pMacroCall, or
+		pIllegal (if not found)
+	oPushLabel, oPushGlobalLabel
+		%pop the character stack and push first 6 characters to UST (along with current location counter)
+	oPushSymbol
+		%pop the character stack and push first 6 characters to the UST
+	oPushAssignmentStatement
+		%pop the UST and push the UST with the resolved assignment statement
+		
+		
+
+
+rules:
+
+Scanner:
+  {
+    @skipBlanks
+  [
+	| CNewline:
+	| *
+	  @ScanLine
+	| CEOF:
+	  >
+  ]
+  };
+
+
+ScanLine:
+  [ @scanToken
+	| pLabel,pGlobalLabel:
+	  @scanToken
+	| pOperator:
+	  [oChooseOperator >> type
+		| pOpcode
+		  @scanOpcode
+		| pAssemblerDirective
+		| pMacroCall
+		| pIllegal
+		  #eBadOperator
+	| pSymbol,pGlobalSymbol:
+	  @expression
+	  oPushAssignmentStatement
+	| pComment:
+	  @comment
+  ]
+  @Comment
+;
+
+
+skipBlanks:
+  {[
+	| cSpace,cTab:
+	| CIllegal:
+	  #eBadCharacter
+	| *:
+	  >
+  ]};
+
+scanToken:
+  [
+	| cSemiColon:
+	  pComment
+	  >
+	| cLetter, cDigit, cPeriod, cDollarsign:
+	  oPushCharacter
+ 	  {[
+		| cLetter, cDigit, cPeriod, cDollarsign:
+	  	oPushCharacter
+		| cColon:			%label
+		  [
+			| cColon:			%must be a global label
+			  oPushGlobalLabel
+			  .pGlobalLabel
+			  >
+			| *:				%must be a label
+			  oPushLabel
+			  .pLabel
+			  >
+		  ]
+		| cEquals:			%assignment
+		  [
+			| cEquals:			%must be a global assignment
+			  oPushGlobalSymbol
+			  .pGlobalSymbol
+		  	  >
+			| *:				%must be an assignment
+		 	 oPushSymbol
+			  .pSymbol
+			  >
+	  	  ]
+		| cSeparator:
+		  .pOperator			%assume operator
+		  >
+		| *:				%anything else
+		  #eBadStatement
+	  ]};
+
+scanOpCode:
+  [ opCode >> type
+	| singleOperand:
+	  @expression
+	  >
+	| doubleOperand:
+	  @expression
+	  @expression
+	  >
+	| branch:
+	  @term
+	  >
+	| jumpSubroutine
+	  @scanJumpSubroutine		%operand is different depending on instruction
+	  >
+	| trapInterrupt:
+	  @scanTrapInterrupt		%operand is different depending on instruction
+	  >
+	| conditionCode:
+	  >				%opcode is determined based solely on mnemonic
+	| miscellaneous:
+	  @scanMiscellaneous		%operand is different depending on instruction
+	  >
+  ];
+
+
+@Expression:
+
+@Term:
+
+@Comment:
+  {[
+	| cIllegal:
+	  #eBadCharacter
+	| cEOL:
+	  >
+	| *:
+  ]};
+
+

@@ -13,7 +13,7 @@ A line is one of the following
 
 Label
 A label is any sequence of the following legal characters, followed by a ":",
-followed by an optional ":" for a globabl label
+followed by an optional ":" for a global label
 	A through Z 
 		Question: are lower case characters allowed?
 			Answer: Yes, but they are converted to uppercase in the
