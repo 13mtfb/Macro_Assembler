@@ -46,15 +46,13 @@ mechanism Mechanism:	%semantic mechanism operation definitions
 		%pop the character stack and search the MST, or PST and return
 		pOpCode (along with type), pAssemblerDirective, pMacroCall, or
 		pIllegal (if not found)
-	oPushLabel, oPushGlobalLabel
-		%pop the character stack and push first 6 characters to UST (along with current location counter)
-	oPushSymbol
-		%pop the character stack and push first 6 characters to the UST
-	oPushAssignmentStatement
-		%pop the UST and push the UST with the resolved assignment statement
-		
-		
-
+	oSymbolTablePush(Type)
+		%pop the character stack and push first 6 characters to UST
+		% type
+		%	label - plus current location counter
+		%	globalLabel - see above. Plus global attribute
+		%	symbol -
+		%	globalSymbol - see above. Plus global attribute
 
 rules:
 
@@ -63,7 +61,7 @@ Scanner:
     @skipBlanks
   [
 	| CNewline:
-	| *
+	| *:
 	  @ScanLine
 	| CEOF:
 	  >
@@ -77,11 +75,11 @@ ScanLine:
 	  @scanToken
 	| pOperator:
 	  [oChooseOperator >> type
-		| pOpcode
+		| pOpcode:
 		  @scanOpcode
-		| pAssemblerDirective
-		| pMacroCall
-		| pIllegal
+		| pAssemblerDirective:
+		| pMacroCall:
+		| pIllegal:
 		  #eBadOperator
 	| pSymbol,pGlobalSymbol:
 	  @expression
@@ -105,7 +103,7 @@ skipBlanks:
 scanToken:
   [
 	| cSemiColon:
-	  pComment
+	  .pComment
 	  >
 	| cLetter, cDigit, cPeriod, cDollarsign:
 	  oPushCharacter
@@ -151,7 +149,7 @@ scanOpCode:
 	  @expression
 	  >
 	| branch:
-	  @term
+	  @expression
 	  >
 	| jumpSubroutine
 	  @scanJumpSubroutine		%operand is different depending on instruction
@@ -169,7 +167,9 @@ scanOpCode:
 
 @Expression:
 
+
 @Term:
+
 
 @Comment:
   {[
