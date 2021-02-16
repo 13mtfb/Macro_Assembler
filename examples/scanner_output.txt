@@ -1,0 +1,78 @@
+pNewLine
+pNewLine
+pNewLine
+pLabel (START)
+pNewLine
+pGlobalLabel (STARTG)
+pNewLine
+pLabel (5START6)
+pNewLine
+pGlobalLabel (5START$)
+pNewLine
+pLabel ($50)
+pNewLine
+pLabel (45$)
+pNewLine
+pNewLine
+pNewLine
+pSymbolS (L5OPG)
+pDoubleEqual
+pNumericLiteral (5)
+pNewLine
+pSymbolS (LOOP)
+pEqual
+pNumericLiteral (10)
+pNewLine
+pSymbolS (50LOOP)
+pEqual
+pSymbolS (LOOP)
+pNewLine
+pNewLine
+pNewLine
+pSymbolS (MOV)
+pSymbolS (R1)
+C,
+pSymbolS (R2)
+pNewLine
+pSymbolS (MOV)
+pSymbolS (R3)
+C,
+pSymbolS (R4)
+pNewLine
+pNewLine
+pNewLine
+pNumericLiteral (50)
+pNewLine
+pSymbolS (55.)
+pNewLine
+C^
+pNumericLiteral (50)
+pNewLine
+pNumericLiteral (1234567890)
+pNewLine
+pNewLine
+pNewLine
+C(
+C)
+pPeriod
+C,
+C<
+C>
+C+
+C-
+C*
+C\
+C&
+C!
+C"
+C'
+C^
+C\
+pNewLine
+pNewLine
+pNewLine
+pNewLine
+#eIllegalChar (Ô)
+#eIllegalChar (ä)
+#eIllegalChar (ù)
+pEOF

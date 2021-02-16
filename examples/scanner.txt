@@ -1,0 +1,31 @@
+;This program is intended to demonstate the scanner functionality
+
+; Symbols (labels)
+START:
+STARTG::
+5START6:
+5START$::
+$50:
+45$:
+
+; Symbols (Assignment Statements)
+L5OPG == 5
+LOOP = 10
+50LOOP = LOOP
+
+; Symbols (Operands)
+MOV R1,R2
+	MOV R3,R4
+
+; Numeric Literals
+50
+55.
+^50
+1234567890
+
+; Operators 
+().,<>+-*\&!"'^\
+
+
+;Illegal character
+℗

@@ -19,5 +19,6 @@ private:
 	string LocationOrSymbol();
 	string NumericLiteralOrSymbol();
 	string Symbol();
+	void advanceChar();
 	string XXXX = "%,#@()<>+-*/&!\"'^\\";
 };

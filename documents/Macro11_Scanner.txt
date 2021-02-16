@@ -34,10 +34,10 @@ cEOF
 
 output:
 Compound
+	pLabel (ex. LABEL: -without the ":")
+	pGlobalLabel
 	pSymbol (ex. "abc")
 	pNumericLiteral (ex. "41")
-pLabelTerminator (ex. ":")
-pGlobalLabelTerminator (ex. "::")
 pEqual (ex. "=")
 pDoubleEqual (ex. "==")
 pRegisterTerm (ex. "%")
@@ -76,18 +76,11 @@ scan:
 	  @NumericliteralOrSymbol
 	| cLetter, cDollarsign:
 	  @Symbol
-	| cColon:
-	  [
-		| cColon:
-		  .pGlobalLabelTerminator
-		|*:
-		  .pLabelTerminator
-	  ]
 	| cEqual:
 	  [
-		| cEqual:
+	  	| cEqual:
 		  .pDoubleEqual
-		| *:
+	  	| *:
 		  .pEqual
 	  ]
 	| cSemiColon:
@@ -132,7 +125,15 @@ Symbol:
   {[
 	| cPeriod,CLetter,cDollarSign,cDigit:
 	  oBufferSave
-	|*:
-	  pSymbol
-	  >
+	| cColon:
+	  [
+	  	| cColon:
+		  .pGlobalLabel
+		  >
+	  	| *:
+	  	  .pLabel:
+		  >
+	  ]
+	| *:
+	  .pSymbol
   ]}
