@@ -8,7 +8,7 @@ using namespace std;
 class scanner {
 public:
 	scanner(string filepath);			// create the filestream using the filename passed to the object
-	string scan();					// returns next token in filestream
+	int scan();					// returns next token in filestream
 private:
 	fstream file;						// file stream
 	string current_line;				// string to hold current line
@@ -16,9 +16,8 @@ private:
 	int current_position;
 	bool EOF_flag;
 	string buffer;
-	string LocationOrSymbol();
-	string NumericLiteralOrSymbol();
-	string Symbol();
+	int LocationOrSymbol();
+	int NumericLiteralOrSymbol();
+	int Symbol();
 	void advanceChar();
-	string XXXX = "%,#@()<>+-*/&!\"'^\\";
 };

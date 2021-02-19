@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "iostream"
+
+//user-defined header files
 #include "scanner.h"
+#include "tokens.h"
 
 using namespace std;
 
@@ -15,7 +18,7 @@ scanner::scanner(string filepath) {
 	EOF_flag = false;
 }
 
-string scanner::scan() {
+int scanner::scan() {
 	current_position++;
 	if (current_position > current_line.length()) {			//cEOF
 		getline(file, current_line);
@@ -31,10 +34,10 @@ string scanner::scan() {
 		}
 		else if (current_position == current_line.length()) {	//cNewLine, cEOF
 			if (EOF_flag) {
-				return "pEOF";
+				return pEOF;
 			}
 			else {
-				return "pNewLine";
+				return pNewLine;
 			}
 		}
 		else if (current_char == '.') {							//cPeriod
@@ -52,28 +55,82 @@ string scanner::scan() {
 		else if (current_char == '=') {							//cEqual
 			advanceChar();
 			if (current_char == '=') {
-				return "pDoubleEqual";
+				return pDoubleEqual;
 			}
 			else {
 				current_position--;
-				return "pEqual";
+				return pEqual;
 			}
 		}
 		else if (current_char == ';') {							//cSemiColon
 			current_position = current_line.length();
-			return "pNewLine";
+			return pNewLine;
 		}
-		else if (current_line.substr(current_position, 1).find_first_of(XXXX)!=string::npos) {
-			//cXXXX
-			return "C" + current_line.substr(current_position, 1);
+		else if (current_char == '%') {							//cPercentSign
+			return pRegisterTerm;
+		}
+		else if (current_char == ',') {							//cComma
+			return pOperandFieldSeperator;
+		}
+		else if (current_char == '#') {							//cBang
+			return pImmediateExpressionIndicator;
+		}
+		else if (current_char == '@') {							//cAt
+			return pDeferredAddressingIndicator;
+		}
+		else if (current_char == '(') {							//cLeftParen
+			return pLeftParen;
+		}
+		else if (current_char == ')') {							//cRightParen
+			return pRightParen;
+		}
+		else if (current_char == '<') {							//cLeftBracket
+			return pLeftBracket;
+		}
+		else if (current_char == '>') {							//cRightBracket
+			return pRightBracket;
+		}
+		else if (current_char == '+') {							//cPlus
+			return pPlus;
+		}
+		else if (current_char == '-') {							//cMinus
+			return pMinus;
+		}
+		else if (current_char == '*') {							//cAsterisk
+			return pMultiply;
+		}
+		else if (current_char == '/') {							//cSlash
+			return pDivide;
+		}
+		else if (current_char == '&') {							//cAmpersand
+			return pAnd;
+		}
+		else if (current_char == '!') {							//cExclamation
+			return pOr;
+		}
+		else if (current_char == '"') {							//cDoubleQuote
+			return pDoubleASCII;
+		}
+		else if (current_char == '\'') {						//cSingleQuote
+			return pSingleASCII;
+		}
+		else if (current_char == '^') {							//cCircumflex
+			return pUnary;
+		}
+		else if (current_char == '^') {							//cCircumflex
+			return pUnary;
+		}
+		else if (current_char == '\\') {						//cBackslash
+			return pBackslash;
 		}
 		else {													//illegalCharacter
-			return "#eIllegalChar (" + current_line.substr(current_position, 1) + ")";
+			// current_line.substr(current_position, 1)
+			return eIllegalChar;
 		}
 	}
 }
 
-string scanner::LocationOrSymbol() {
+int scanner::LocationOrSymbol() {
 	advanceChar();
 	if (current_char == '.' || current_char == '$' || isdigit(current_char) || isalpha(current_char)) {
 		buffer += current_char;
@@ -81,11 +138,11 @@ string scanner::LocationOrSymbol() {
 	}
 	else {
 		current_position--;
-		return "pPeriod";
+		return pPeriod;
 	}
 }
 
-string scanner::NumericLiteralOrSymbol() {
+int scanner::NumericLiteralOrSymbol() {
 	while (1) {
 		advanceChar();
 		if (isdigit(current_char)) {
@@ -97,12 +154,13 @@ string scanner::NumericLiteralOrSymbol() {
 		}
 		else {
 			current_position--;
-			return "pNumericLiteral (" + buffer + ")";
+			// buffer;
+			return pNumericLiteral;
 		}
 	}
 }
 
-string scanner::Symbol() {
+int scanner::Symbol() {
 	while (1) {
 		advanceChar();
 		if (current_char == '.' || isalpha(current_char) || current_char == '$' || isdigit(current_char)) {
@@ -111,16 +169,19 @@ string scanner::Symbol() {
 		else if (current_char == ':') {				//cColon
 			advanceChar();
 			if (current_char == ':') {
-				return "pGlobalLabel (" + buffer + ")";
+				// buffer;
+				return pGlobalLabel;
 			}
 			else {
 				current_position--;
-				return "pLabel (" + buffer + ")";
+				// buffer;
+				return pLabel;
 			}
 		}
 		else {
 			current_position--;
-			return "pSymbol (" + buffer + ")";
+			// buffer;
+			return pSymbol;
 		}
 	}
 }
