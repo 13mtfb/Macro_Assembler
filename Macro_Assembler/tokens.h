@@ -37,7 +37,7 @@ enum scannerTokens {
 	eIllegalChar
 };
 
-/*vector<string> scannerTokensASCII = {
+const vector<string> scannerTokensASCII = {
 	"pLabel",
 	"pGlobalLabel",
 	"pSymbol",
@@ -65,6 +65,6 @@ enum scannerTokens {
 	"pUnary",
 	"pBackslash",
 	"pNewLine",
-	"pEOF"
+	"pEOF",
 	"eIllegalChar"
-};*/
+};

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "iostream"
+#include <stdexcept>
 
 //user-defined header files
 #include "scanner.h"
@@ -11,8 +12,8 @@ using namespace std;
 scanner::scanner(string filepath) {
 	file.open(filepath, fstream::in);			//open the file passed to the class
 	if(!file.is_open()) {						//if not succesful, print error message
-		cout << "Error in file specification" << endl;
-	}											//TODO: throw error to main
+		throw runtime_error("Could not open file");
+	}
 	getline(file, current_line);
 	current_position = -1;
 	EOF_flag = false;
