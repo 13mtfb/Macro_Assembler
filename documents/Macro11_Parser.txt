@@ -1,0 +1,79 @@
+Macro11_Parser
+
+input:
+//from scanner
+
+output:
+//assembled statments
+
+parse:
+  {[
+	| pNewLine:
+	| *:
+	  @statement
+  }];
+
+statement:
+  [
+	| pLabel,pGlobalLabel:
+	  @statement
+	| pOperator:
+	  [oChooseOperator >> type
+		| pOpcode:
+		  @opcode
+		| pAssemblerDirective:
+		  @assemblerDirective
+		| pMacroCall:
+		  @macroCall
+	  ]
+	| pSymbol,pGlobalSymbol:
+	  @expression
+        | *:
+	  #eIllegalStatement
+  ];
+
+opCode:
+  [ opCode >> type
+	| singleOperand:
+	  @expression
+	  >
+	| doubleOperand:
+	  @expression
+	  @expression
+	  >
+	| branch:
+	  @expression
+	  >
+	| jumpSubroutine
+	  @scanJumpSubroutine		%operand is different depending on instruction
+	  >
+	| trapInterrupt:
+	  @scanTrapInterrupt		%operand is different depending on instruction
+	  >
+	| conditionCode:
+	  >				%opcode is determined based solely on mnemonic
+	| miscellaneous:
+	  @scanMiscellaneous		%operand is different depending on instruction
+	  >
+  ];
+
+assemblerDirective:
+  [
+
+  ];
+
+macroCall:
+  [
+
+  ];
+
+expression:
+  [
+
+  ];
+
+
+term:
+  [
+
+  ];
