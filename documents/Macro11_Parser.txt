@@ -1,12 +1,18 @@
 Macro11_Parser
 
+-Scan the entire line in mainline, pass as vector to parser object
+-Pass compound token values as vector to parser object
+-Everytime parser encounters a compound token it calls a screener function
+which may change the token value and can provide further data (ex. opcode type)
+at the same time.
+
 input:
 //from scanner
 
 output:
 //assembled statments
 
-parse:
+parse:				// will exist in mainline (not as parser object)
   {[
 	| pNewLine:
 	| *:
