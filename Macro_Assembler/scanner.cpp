@@ -8,7 +8,7 @@
 
 using namespace std;
 
-
+//// PUBLIC METHODS ////
 scanner::scanner(string filepath) {
 	file.open(filepath, fstream::in);			//open the file passed to the class
 	if(!file.is_open()) {						//if not succesful, print error message
@@ -125,12 +125,23 @@ int scanner::scan() {
 			return pBackslash;
 		}
 		else {													//illegalCharacter
-			// current_line.substr(current_position, 1)
+			buffer = current_line.substr(current_position, 1);
+			compoundTokens.push_back(buffer);
 			return eIllegalChar;
 		}
 	}
 }
 
+vector<string> scanner::returnCompoundTokens() {
+	return compoundTokens;
+}
+
+void scanner::clearCompoundTokens() {
+	compoundTokens.clear();
+}
+
+
+//// PRIVATE METHODS ////
 int scanner::LocationOrSymbol() {
 	advanceChar();
 	if (current_char == '.' || current_char == '$' || isdigit(current_char) || isalpha(current_char)) {
@@ -155,7 +166,7 @@ int scanner::NumericLiteralOrSymbol() {
 		}
 		else {
 			current_position--;
-			// buffer;
+			compoundTokens.push_back(buffer);
 			return pNumericLiteral;
 		}
 	}
@@ -170,18 +181,18 @@ int scanner::Symbol() {
 		else if (current_char == ':') {				//cColon
 			advanceChar();
 			if (current_char == ':') {
-				// buffer;
+				compoundTokens.push_back(buffer);
 				return pGlobalLabel;
 			}
 			else {
 				current_position--;
-				// buffer;
+				compoundTokens.push_back(buffer);
 				return pLabel;
 			}
 		}
 		else {
 			current_position--;
-			// buffer;
+			compoundTokens.push_back(buffer);
 			return pSymbol;
 		}
 	}
@@ -191,3 +202,4 @@ void scanner::advanceChar() {
 	current_position++;
 	current_char = current_line[current_position];
 }
+
