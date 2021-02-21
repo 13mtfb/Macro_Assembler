@@ -9,7 +9,8 @@ using namespace std;
 
 enum operatorType {
 	SINGLE_OPERAND,
-	DOUBLE_OPERAND,
+	DOUBLE_OPERAND_1,			// OPR src, dst
+	DOUBLE_OPERAND_2,			// OPR src, r | OPR r, dst
 	BRANCH,
 	JUMP_SUBROUTINE,
 	TRAP_INTERRUPT,
@@ -74,23 +75,53 @@ static const opCode instruction[] = {
 	{"MFPI",	006500, MISCELLANEOUS},			//move from previous instr space
 	{"MTPI",	006600, MISCELLANEOUS},			//move to previous instr space
 	{"SXT",		006700, SINGLE_OPERAND},		//sign extend
-};
-
-
-char register_symbols[] = {	'R0',	// register 0 definition
-							'R1',	// register 1 definition
-							'R2',	// register 2 definition
-							'R3',	// register 3 definition
-							'R4',	// register 4 definition
-							'R5',	// register 5 definition
-							'R6',	// stack pointer definition
-							'R7',	// program counter definition
-							'\0'	// end of array
-};
-
-
-////// Macro-11 Directives //////
-
-char macro_directive[] = {
-							'\0'	//end of array
+	{"MOV",		010000, DOUBLE_OPERAND_1},		//move
+	{"CMP",		020000, DOUBLE_OPERAND_1},		//compare
+	{"BIT",		030000, DOUBLE_OPERAND_1},		//bit test (AND)
+	{"BIC",		040000, DOUBLE_OPERAND_1},		//bit clear
+	{"BIS",		050000, DOUBLE_OPERAND_1},		//bit set (OR)
+	{"ADD",		060000, DOUBLE_OPERAND_1},		//add
+	{"MUL",		070000,	DOUBLE_OPERAND_2},		//multiply
+	{"DIV",		071000, DOUBLE_OPERAND_2},		//divide
+	{"ASH",		072000, DOUBLE_OPERAND_2},		//shift arithmetically
+	{"ASHC",	073000, DOUBLE_OPERAND_2},		//arith shift combined
+	{"XOR",		074000, DOUBLE_OPERAND_2},		//exclusive OR
+	//FADD
+	//FSUB
+	//FMUL
+	//FDIV
+	{"SOB",		077000, JUMP_SUBROUTINE},		//subtract 1 & br (if !=0)
+	{"BPL",		100000, BRANCH},				//branch if plus 
+	{"BMI",		100400, BRANCH},				//branch if minus
+	{"BHI",		101000, BRANCH},				//branch if higher
+	{"BLOS",	101400, BRANCH},				//branch if lower or same
+	{"BVC",		102000, BRANCH},				//branch if overflow is clear
+	{"BVS",		102400, BRANCH},				//branch if overflow is set
+	{"BCC",		103000, BRANCH},				//br if carry is clear
+	{"BHIS",	103000, BRANCH},				//branch if higher or same
+	{"BCS",		103400, BRANCH},				//br if carry is set
+	{"BLO",		103400, BRANCH},				//branch if lower
+	{"EMT",		104000, TRAP_INTERRUPT},	
+	{"TRAP",	104400, TRAP_INTERRUPT},
+	{"CLRB",	105000, SINGLE_OPERAND},		//clear (byte)
+	{"COMB",	105100,	SINGLE_OPERAND},		//complement (1's) (byte)
+	{"INCB",	105200, SINGLE_OPERAND},		//increment (byte)
+	{"DECB",	105300, SINGLE_OPERAND},		//decrement (byte)
+	{"NEGB",	105400,	SINGLE_OPERAND},		//negate (2's) (byte)
+	{"ADCB",	105500, SINGLE_OPERAND},		//add carry (byte)
+	{"SBCB",	105600, SINGLE_OPERAND},		//subtract carry (byte)
+	{"TSTB",	105700, SINGLE_OPERAND},		//test (byte)
+	{"RORB",	106000, SINGLE_OPERAND},		//rotate right (byte)
+	{"ROLB",	106100, SINGLE_OPERAND},		//rotate left (byte)
+	{"ASRB",	106200, SINGLE_OPERAND},		//arith shift right (byte)
+	{"ASLB",	106300, SINGLE_OPERAND},		//arith shift left (byte)
+	{"MFPD",	106500, MISCELLANEOUS},
+	{"MTPD",	106600, MISCELLANEOUS},
+	{"MOVB",	110000, DOUBLE_OPERAND_1},		//move (byte)
+	{"CMPB",	120000, DOUBLE_OPERAND_1},		//compare (byte)
+	{"BITB",	130000, DOUBLE_OPERAND_1},		//bit test (AND) (byte)
+	{"BICB",	140000, DOUBLE_OPERAND_1},		//bit clear (byte)
+	{"BISB",	150000, DOUBLE_OPERAND_1},		//bit set (OR) (byte)
+	{"SUB",		160000, DOUBLE_OPERAND_1}
+	//Floating point instructions
 };
