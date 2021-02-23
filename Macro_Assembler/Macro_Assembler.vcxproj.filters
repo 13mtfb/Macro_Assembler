@@ -21,10 +21,13 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inputReader.h">
+    <ClInclude Include="parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="parser.h">
+    <ClInclude Include="scanner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tokens.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,7 +41,7 @@
     <ClCompile Include="PST.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="inputReader.cpp">
+    <ClCompile Include="scanner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

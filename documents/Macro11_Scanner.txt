@@ -1,0 +1,139 @@
+Macro11_Scanner/Screener
+
+
+input:
+cLetter (a-z, A-Z)
+cDollarsign ($)
+cDigit (0-9)
+cColon	(:)
+cEqual	(=)
+cPercentSign (%)
+cSpace ( )
+cTab (	)
+cComma (,)
+cBang (#)
+cAt (@)
+cLeftParen (()
+cRightParen ())
+cPeriod (.)
+cSemiColon (;)
+cLeftBracket (<)
+cRightBracket (>)
+cPlus (+)
+cMinus (-)
+cAsterisk (*)
+cSlash (/)
+cAmpersand (&)
+cExclamation (!)
+cDoubleQuote (")
+cSingleQuote (')
+cCircumflex (^)
+cBackslash (\)
+cNewLine ("\LF")
+cEOF
+
+output:
+Compound
+	pLabel (ex. LABEL: -without the ":")
+	pGlobalLabel
+	pSymbol (ex. "abc")
+	pNumericLiteral (ex. "41")
+pEqual (ex. "=")
+pDoubleEqual (ex. "==")
+pRegisterTerm (ex. "%")
+pImmediateExpressionIndicator ("#")
+pDeferredAddressingIndicator ("@")
+pLeftParen ("(")
+pRightParen (")")
+pPeriod (".")
+pOperandFieldSeperator (",")
+pComment (";")
+pLeftBracket ("<")
+pRightBracket (">")
+pPlus ("+")
+pMinus ("-")
+pMultiply ("*")
+pDivide ("/")
+pAnd ("&")
+pOr ("!")
+pDoubleASCII (""")
+pSingleASCII ("'")
+pUnary ("^")
+pBackslash ("\")
+pNewLine ("\LF")
+pEOF
+
+scan:
+  {[
+	| cSpace,cTab:
+	| cNewLine:
+	  .pNewLine
+	| cEOF
+	  .pEOF
+	| cPeriod:
+	  @LocationOrSymbol
+	| cDigit:
+	  @NumericliteralOrSymbol
+	| cLetter, cDollarsign:
+	  @Symbol
+	| cEqual:
+	  [
+	  	| cEqual:
+		  .pDoubleEqual
+	  	| *:
+		  .pEqual
+	  ]
+	| cSemiColon:
+	  {[
+		| cNewLine:
+		  .pNewLine
+		  >
+		| *:
+	  ]}
+	| cXXXX:				%% every other symbol, output equivalent symbol
+	  .pXXXX
+	| *:
+	  #eIllegalChar
+  ]};
+
+LocationOrSymbol:
+  [
+	| cPeriod,cLetter,cDollarSign,cDigit:
+	  oBufferSave
+	  @Symbol
+	| *:
+	  .pPeriod
+	  >
+  ];
+
+  
+NumericliteralOrSymbol:				%% implication: symbol with only digits is evaluated as a numeric literal
+ {[
+	| cDigit:
+	  oBufferSave
+	| cPeriod,cLetter,cDollarSign:
+	  oBufferSave
+	  @Symbol
+	  >
+	| *:
+	  .pNumericLiteral
+	  >
+ ]};
+
+
+Symbol:
+  {[
+	| cPeriod,CLetter,cDollarSign,cDigit:
+	  oBufferSave
+	| cColon:
+	  [
+	  	| cColon:
+		  .pGlobalLabel
+		  >
+	  	| *:
+	  	  .pLabel:
+		  >
+	  ]
+	| *:
+	  .pSymbol
+  ]}
