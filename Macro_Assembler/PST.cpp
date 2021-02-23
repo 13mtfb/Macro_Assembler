@@ -1,4 +1,4 @@
-//The following module defines the Macro-11 permanent symbol table (PST)
+//The following module defines the Macro-11 permanent symbol tables (PST)
 
 #include "stdafx.h"
 #include "iostream"
@@ -18,12 +18,28 @@ enum operatorType {
 	CONDITION_CODE,
 };
 
+enum directiveType {
+	ASCII,
+	ASCIZ,
+	ASECT,
+	BLKB,
+	BLKW,
+	BYTE,
+	// others
+	WORD
+};
+
 
 struct opCode {
 	string mnemonic;
 	char opcode;
 	int operatortype;
 	
+};
+
+struct asmDir {									//note: not complete
+	string directive;
+	int directivetype;
 };
 
 ////// OP CODES //////
@@ -124,4 +140,16 @@ static const opCode instruction[] = {
 	{"BISB",	150000, DOUBLE_OPERAND_1},		//bit set (OR) (byte)
 	{"SUB",		160000, DOUBLE_OPERAND_1}
 	//Floating point instructions
+};
+
+
+static const asmDir directive[]{				// note: not complete
+	{".ASCII",		ASCII},
+	{".ASCIZ",		ASCIZ},
+	{".ASECT",		ASECT},
+	{".BLKB",		BLKB},
+	{".BLKW",		BLKW},
+	{".BYTE",		BYTE},
+	// others
+	{".WORD",		WORD}
 };
