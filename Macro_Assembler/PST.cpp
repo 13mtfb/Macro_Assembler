@@ -117,8 +117,8 @@ static const opCode instruction[] = {
 	{"BHIS",	0103000, BRANCH},				//branch if higher or same
 	{"BCS",		0103400, BRANCH},				//br if carry is set
 	{"BLO",		0103400, BRANCH},				//branch if lower
-	{"EMT",		0104000, TRAP_INTERRUPT},
-	{"TRAP",	0104400, TRAP_INTERRUPT},
+	{"EMT",		0104000, TRAP_INTERRUPT},		//emulator trap
+	{"TRAP",	0104400, TRAP_INTERRUPT},		//trap
 	{"CLRB",	0105000, SINGLE_OPERAND},		//clear (byte)
 	{"COMB",	0105100, SINGLE_OPERAND},		//complement (1's) (byte)
 	{"INCB",	0105200, SINGLE_OPERAND},		//increment (byte)
@@ -131,8 +131,8 @@ static const opCode instruction[] = {
 	{"ROLB",	0106100, SINGLE_OPERAND},		//rotate left (byte)
 	{"ASRB",	0106200, SINGLE_OPERAND},		//arith shift right (byte)
 	{"ASLB",	0106300, SINGLE_OPERAND},		//arith shift left (byte)
-	{"MFPD",	0106500, MISCELLANEOUS},
-	{"MTPD",	0106600, MISCELLANEOUS},
+	{"MFPD",	0106500, MISCELLANEOUS},		//move from previous data space
+	{"MTPD",	0106600, MISCELLANEOUS},		//move to previous data space
 	{"MOVB",	0110000, DOUBLE_OPERAND_1},		//move (byte)
 	{"CMPB",	0120000, DOUBLE_OPERAND_1},		//compare (byte)
 	{"BITB",	0130000, DOUBLE_OPERAND_1},		//bit test (AND) (byte)
