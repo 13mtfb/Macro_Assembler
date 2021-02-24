@@ -128,6 +128,72 @@ in the context of each type of operator
 		over binary operators.
 		-Spaces within expressions are ignored
 
+Addressing Modes
+The following symbols are used to describe addressing modes:
+	E	- Expression
+	R	- Resister Expression
+		  Any expression containing a term preceded by a percentsign
+		  Or a symbol previously equated to such a term
+	ER	- Register expression or absolute expression in the range 0 - 7
+
+	Operands in the modes listed below do no increase the length of an
+	instruction:
+
+	Register Mode			Format: R
+	-Register itself contains operand to be manipulated by the instruction
+
+	Register Deferred Mode		Format: @R or (ER)
+	-Register contains the address of the operand to be manipulated by the
+	 instruction
+
+	AutoIncrement Mode		Format: (ER)+
+	-The contents of the register are incremented immediately after being 
+	 used as the address of the operand.
+
+	AutoIncrement Deferred Mode	Format: @(ER)+
+	-The register contains a pointer to the address of the operand. The
+	 contents of the register are incremented after being used as a pointer.
+
+	AutoDecrement Mode		Format: -(ER)
+	-The contents of the register are decremented before being 
+	 used as the address of the operand.
+
+	AutoDecrement Deferred Mode	Format: @-(ER)
+	-The contents of the register are decremented before being 
+	 used as a pointer to the address of the operand.
+
+
+
+	Operand in the modes listed below add one word to the instruction length
+	for each occurrence of an operand of that form:
+
+	Index Mode			Format: E(ER)
+	-The value of an expression (E) is stored as the second (or third) word
+	 of the instruction. The effective address of the operand is calculated
+	 as the value of E, plus the contents of register ER.
+
+	Index Deferred Mode		Format: @E(ER)
+	-The effective address of a pointer to the operand is calculated as the
+	 value of E, plus the contents of register ER.
+
+	Immediate Mode			Format: #E
+	-Operand is stored as the second (or third) word of the instruction.
+	 This mode is assembled as an autoincrement of the PC.
+
+	Absolute Mode			Format: @#E
+	-Absolute asdress is stored as the second (or third) word of the
+	 instruction. This mode is assembled as an autoincrment deferred of the PC.
+
+	Relative Mode			Format: E
+	-The offset for the address calculation is stored as the second (or third)
+	 word of the instruction, whose value is added to the contents of the PC
+	 to yield the address of the source operand.
+
+	Relative Deferred Mode		Format @E
+	-Similar to relative mode, except the expression E is used as a pointer
+	 to the address of the operand.
+	
+
 
 Comment
 A comment begins with a ";" and can contain any ASCII characters except

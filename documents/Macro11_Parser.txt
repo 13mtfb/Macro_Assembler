@@ -10,6 +10,20 @@ input:
 //from scanner
 
 output:
+//Addressing modes
+aRegisterMode (R)
+aRegisterDeferredMode (@R or (ER))
+aAutoIncrementMode ((ER+))
+aAutoIncrementDeferredMode (@(ER)+)
+aAutoDecrementMode (-(ER))
+aAutoDecrementDeferredMode (@-(ER))
+aIndexMode (E(ER))
+aIndexDeferredMode (@E(ER)
+aImmediateMode (#E)
+aAbsoluteMode (@#E)
+aRelativeMode (E)
+aRelativeDeferredMode (@E)
+
 //assembled statments
 
 parse:				// will exist in mainline (not as parser object)
@@ -41,10 +55,11 @@ statement:
 opCode:
   [ opCode >> type
 	| singleOperand:
-	  @expression
+	  @addressingMode
 	  >
 	| doubleOperand:
-	  @expression
+	  @addressingMode
+	  pOperandFieldSeparator
 	  @expression
 	  >
 	| branch:
@@ -61,6 +76,33 @@ opCode:
 	| miscellaneous:
 	  @scanMiscellaneous		%operand is different depending on instruction
 	  >
+  ];
+
+addressingMode:
+  [
+	| pRegisterTerm:		%Register Mode
+	  @registerTerm
+	  .aRegisterMode
+	| pSymbol:
+	  [ oChooseSymbol  >> type
+		| Register:
+		  .aRegisterMode
+		|
+		  
+	  ]
+	| pDeferredAddressingIndicator:
+	  [
+		|
+
+		|
+
+	  ]
+	| pLeftParen:
+
+	| pMinus:
+
+	| pImmediateExpressionIndicator:
+
   ];
 
 assemblerDirective:
