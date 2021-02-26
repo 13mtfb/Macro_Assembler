@@ -37,17 +37,17 @@ statement:
   [
 	| pLabel,pGlobalLabel:
 	  @statement
-	| pOperator:
-	  [oChooseOperator >> type
-		| pOpcode:
+	| pSymbol:
+	  [ oChooseSymbol >> type
+		| Opcode:			%part of the PST
 		  @opcode
-		| pAssemblerDirective:
+		| AssemblerDirective:		%part of the PST
 		  @assemblerDirective
-		| pMacroCall:
+		| MacroCall:			%previously defined macro in MST
 		  @macroCall
+		| symbol:			%not previously defined
+		  @expression
 	  ]
-	| pSymbol,pGlobalSymbol:
-	  @expression
         | *:
 	  #eIllegalStatement
   ];
@@ -59,9 +59,12 @@ opCode:
 	  >
 	| doubleOperand:
 	  @addressingMode
-	  pOperandFieldSeparator
-	  @expression
-	  >
+	  [
+		| pOperandFieldSeparator:
+		  @addressingMode
+		| *:
+		  #eMissingOperator
+	  ]
 	| branch:
 	  @expression
 	  >
@@ -80,29 +83,81 @@ opCode:
 
 addressingMode:
   [
-	| pRegisterTerm:		%Register Mode
+	| pRegisterTerm:			%Must be register Mode
 	  @registerTerm
 	  .aRegisterMode
 	| pSymbol:
 	  [ oChooseSymbol  >> type
 		| Register:
 		  .aRegisterMode
-		|
-		  
+		| *:
+		  @expression
+		  [
+			| pLeftParen:
+			  @registerExpression
+			  [
+				| pRightParen:
+				  .aIndexMode
+				| *:
+				  #eIllegalOperatorSpecification
+			  ]
+			| *:
+			  .aRelativeMode
+		  ]
 	  ]
 	| pDeferredAddressingIndicator:
 	  [
-		|
-
-		|
-
+		| pSymbol:
+	  	  [ oChooseSymbol  >> type
+			| Register:
+			  .aRegisterDeferredMode
+			| *:
+		 	  @expression
+			  [
+				| pLeftParen:
+				  @registerExpression
+				  [
+					| pRightParen:
+					  .aIndexDeferredMode
+					| *:
+					  #eIllegalOperatorSpecification
+				  ]
+				| *:
+				  .aRelativeDeferredMode
+			  ]
+		| pMinus:
+		| pLeftParen:
+		| pImmediateExpressionIndicator:
 	  ]
 	| pLeftParen:
-
+	  @registerExpression
+	  [
+		| pRightParen:
+		  [
+		  	| pPlus:
+			  .aAutoIncrementMode
+			| *:
+			  .aRegisterDeferredMode
+		  ]
+		| *:
+		  #eIllegalOperatorSpecification
+	  ]
 	| pMinus:
-
-	| pImmediateExpressionIndicator:
-
+	  [
+		| pLeftParen:
+		  @expression
+		  [
+			| pRightParen:
+			  .aAutoDecrementMode
+			| *:
+			  #eIllegalOperatorSpecification
+		  ]
+		| *:
+		  #eIllegalOperatorSpecification
+	  ]
+	| pImmediateExpressionIndicator:	%Must be Immediate Mode
+	  @expression
+	  .aImmediateMode
   ];
 
 assemblerDirective:
@@ -111,6 +166,16 @@ assemblerDirective:
   ];
 
 macroCall:
+  [
+
+  ];
+
+registerTerm:
+  [
+
+  ];
+
+registerExpression:
   [
 
   ];
