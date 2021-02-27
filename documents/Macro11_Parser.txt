@@ -45,8 +45,20 @@ statement:
 		  @assemblerDirective
 		| MacroCall:			%previously defined macro in MST
 		  @macroCall
-		| symbol:			%not previously defined
-		  @expression
+		| Symbol:			%direct assignment statement
+		  [
+			| pEquals:
+		  	  @expression
+			| *:
+			  #eIllegalStatement
+		  ]
+	  ]
+	| pPeriod:				%current location counter assignment
+	  [
+		| pEquals:
+	  	  @expression
+		| *:
+		  #eIllegalStatement
 	  ]
         | *:
 	  #eIllegalStatement
@@ -55,13 +67,13 @@ statement:
 opCode:
   [ opCode >> type
 	| singleOperand:
-	  @addressingMode
+	  @operand
 	  >
 	| doubleOperand:
-	  @addressingMode
+	  @operand
 	  [
 		| pOperandFieldSeparator:
-		  @addressingMode
+		  @operand
 		| *:
 		  #eMissingOperator
 	  ]
@@ -81,7 +93,7 @@ opCode:
 	  >
   ];
 
-addressingMode:
+operand:
   [
 	| pSymbol:
 	  [ oChooseSymbol  >> type
@@ -96,7 +108,7 @@ addressingMode:
 				| pRightParen:
 				  .aIndexMode
 				| *:
-				  #eIllegalOperatorSpecification
+				  #eIllegalOperandSpecification
 			  ]
 			| *:
 			  .aRelativeMode
@@ -117,7 +129,7 @@ addressingMode:
 					| pRightParen:
 					  .aIndexDeferredMode
 					| *:
-					  #eIllegalOperatorSpecification
+					  #eIllegalOperandSpecification
 				  ]
 				| *:
 				  .aRelativeDeferredMode
@@ -130,10 +142,10 @@ addressingMode:
 				| pRightParen:
 				  .aAutoDecrementDeferredMode
 				| *:
-				  #eIllegalOperatorSpecification
+				  #eIllegalOperandSpecification
 			  ]
 			| *:
-			  #eIllegalOperatorSpecification
+			  #eIllegalOperandSpecification
 		  ]
 		| pLeftParen:
 		  @registerExpression
@@ -143,10 +155,10 @@ addressingMode:
 				| pPlus:
 				  .aAutoIncrementDeferredMode
 				| *:
-				  #eIllegalOperatorSpecification
+				  #eIllegalOperandSpecification
 			  ]
 			| *:
-			  #eIllegalOperatorSpecification
+			  #eIllegalOperandSpecification
 		  ]
 		| pImmediateExpressionIndicator:
 		  @expression
@@ -163,7 +175,7 @@ addressingMode:
 			  .aRegisterDeferredMode
 		  ]
 		| *:
-		  #eIllegalOperatorSpecification
+		  #eIllegalOperandSpecification
 	  ]
 	| pMinus:
 	  [
@@ -173,15 +185,102 @@ addressingMode:
 			| pRightParen:
 			  .aAutoDecrementMode
 			| *:
-			  #eIllegalOperatorSpecification
+			  #eIllegalOperandSpecification
 		  ]
 		| *:
-		  #eIllegalOperatorSpecification
+		  #eIllegalOperandSpecification
 	  ]
 	| pImmediateExpressionIndicator:	%Must be Immediate Mode
 	  @expression
 	  .aImmediateMode
   ];
+
+
+registerExpression:
+  [
+	| pSymbol:
+	  [ oChooseSymbol  >> type
+		| Register:
+		  >
+		| *:
+		  @expression
+		  [ oChooseExpression >> type
+			| absolute:
+			  [ oChooseExpressionValue >> value
+				| 0-7:
+				  >
+				| *:
+				  #eIllegalRegisterExpression
+			  ]
+			| *:
+			  #eIllegalRegisterExpression
+		  ]
+	    ]
+	| *:
+	  #eIllegalRegisterExpression
+  ];
+
+expression:
+  @term
+  {[
+	| pPlus,pMinus,pMultiply,pDivide,pAnd,pOr:
+	  oPushExpressionOperator
+	  @expression
+	| *:
+	  oEvaluateExpression
+	  >
+  ]};
+
+
+term:
+  {[
+	| pPlus,pMinus,pUnary:
+	  oPushTermOperator
+	  @term
+	| pLeftBracket:
+	  @expression
+	  [
+		| pRightBracket:
+		  oEvaluateTerm
+		  >
+		| *:
+		  #eIllegalTerm
+	  ]
+	| pNumericLiteral:
+	  oEvaluateTerm
+	  >
+	| pPeriod:
+	  oEvaluateTerm
+	  >
+	| pSymbol:
+	  [ oChooseSymbol >> type
+		| symbol,opcode:
+		  oEvaluateTerm
+		  >
+		| *:
+		  #eIllegalTerm
+		  >
+	  ]
+	| pSingleASCII:
+	  [
+		| pSymbol		%check if single ASCII character
+		  oEvaluateTerm
+		  >
+		| *:
+		  #eIllegalTerm
+		  >
+	  ]
+	| pDoubleASCII:
+	  [
+		| pSymbol		%check if double ASCII character
+		  oEvaluateTerm
+		  >
+		| *:
+		  #eIllegalTerm
+		  >
+	  ]
+  ]};
+
 
 assemblerDirective:
   [
@@ -189,27 +288,6 @@ assemblerDirective:
   ];
 
 macroCall:
-  [
-
-  ];
-
-registerTerm:
-  [
-
-  ];
-
-registerExpression:
-  [
-
-  ];
-
-expression:
-  [
-
-  ];
-
-
-term:
   [
 
   ];
