@@ -83,9 +83,6 @@ opCode:
 
 addressingMode:
   [
-	| pRegisterTerm:			%Must be register Mode
-	  @registerTerm
-	  .aRegisterMode
 	| pSymbol:
 	  [ oChooseSymbol  >> type
 		| Register:
@@ -126,8 +123,34 @@ addressingMode:
 				  .aRelativeDeferredMode
 			  ]
 		| pMinus:
+		  [
+			| pLeftParen:
+			  @registerExpression
+			  [
+				| pRightParen:
+				  .aAutoDecrementDeferredMode
+				| *:
+				  #eIllegalOperatorSpecification
+			  ]
+			| *:
+			  #eIllegalOperatorSpecification
+		  ]
 		| pLeftParen:
+		  @registerExpression
+		  [
+			| pRightParen:
+			  [
+				| pPlus:
+				  .aAutoIncrementDeferredMode
+				| *:
+				  #eIllegalOperatorSpecification
+			  ]
+			| *:
+			  #eIllegalOperatorSpecification
+		  ]
 		| pImmediateExpressionIndicator:
+		  @expression
+		  .aAbsoluteMode
 	  ]
 	| pLeftParen:
 	  @registerExpression
