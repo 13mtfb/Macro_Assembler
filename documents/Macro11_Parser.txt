@@ -2,7 +2,7 @@ Macro11_Parser
 
 -Scan the entire line in mainline, pass as vector to parser object
 -Pass compound token values as vector to parser object
--Everytime parser encounters a compound token it calls a screener function
+-Every time parser encounters a compound token it calls a screener function
 which may change the token value and can provide further data (ex. opcode type)
 at the same time.
 
@@ -24,7 +24,32 @@ aAbsoluteMode (@#E)
 aRelativeMode (E)
 aRelativeDeferredMode (@E)
 
-//assembled statments
+// mechanisms
+oChooseExpression
+	% return the most recently evaluated expression type (absolute, relocatable, external, complex relocatable)
+oChooseExpressionValue
+	% return the value of the most recently evaluated expression (must be absolute expression)
+oChooseSymbol (symbol)
+	% return the type of expression
+		Opcode - if symbol matches string in opcode table (PST)
+		AssemblerDirective - if symbol matches string in the assembler directive table (PST)
+		MacroCall - if symbol matches string in the macro symbol table (MST)
+		Symbol - if found in the UST. The following attributes are set
+			Register - symbol is a register mnemonic (R0, etc.) or assigned to an absolute 
+			expression (in the range 0-7) proceeded by a percent sign.
+		Unknown - if symbol does not match any of strings in the PST, MST, or UST.
+oPushTermOperator
+	% push the term operator to the Term Operator Stack
+oEvaluateTerm
+	% pop the term operators from the term operator stack and apply them to the term. Push the evaluated term
+	 to the expression stack.
+oPushExpressionOperator
+	% push the expression operator to the expression operator stack
+oEvaluateExpression
+	% pop the expression operators from the expression operator stack, and apply them to the term stack.
+	  Store in local storage for later processing.
+
+//assembled statements
 
 parse:				// will exist in mainline (not as parser object)
   {[
