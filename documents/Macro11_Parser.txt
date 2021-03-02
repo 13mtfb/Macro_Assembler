@@ -23,6 +23,17 @@ aImmediateMode (#E)
 aAbsoluteMode (@#E)
 aRelativeMode (E)
 aRelativeDeferredMode (@E)
+//instruction emit
+aSingleOperand
+aDoubleOperand
+aBranch
+aJumpSubroutineRTS
+aJumpSubroutineMARK
+aJumpSubroutineSOB
+aTrapInterrupt
+aConditionCode
+aMiscellaneous
+aMiscellaneousSPL
 
 // mechanisms
 oChooseExpression
@@ -93,29 +104,93 @@ opCode:
   [ opCode >> type
 	| singleOperand:
 	  @operand
-	  >
-	| doubleOperand:
+	  .aSingleOperand
+	| doubleOperand1:
 	  @operand
 	  [
 		| pOperandFieldSeparator:
 		  @operand
+		  .aDoubleOperand
+		| *:
+		  #eMissingOperator
+	  ]
+	| doubleOperand2:
+	  @registerExpression
+	  [
+		| pOperandFieldSeparator:
+		  @operand
+		  .aDoubleOperand
 		| *:
 		  #eMissingOperator
 	  ]
 	| branch:
 	  @expression
-	  >
-	| jumpSubroutine
-	  @scanJumpSubroutine		%operand is different depending on instruction
-	  >
-	| trapInterrupt:
-	  @scanTrapInterrupt		%operand is different depending on instruction
-	  >
+	  [ oChooseExpression >> type
+		| abosolute,relocatable:
+		  [ oChooseExpressionValue >> value
+			| -128 - 127:
+			  .aBranch
+			| *
+			  #eBranchOutofRange
+		  ]
+		| *:
+		  #eIllegalBranchExpression
+	  ]
+	| jumpSubroutineRTS:
+	  @registerExpression
+	  .aJumpSubroutineRTS
+	| jumpSubroutineMARK:
+	  @expression			%not sure about this
+	  .aJumpSubroutineMARK
+	| jumpSubroutineSOB:
+	  @registerExpression
+	  [
+		| pOperandFieldSeparator:
+		  @expression
+		  [ oChooseExpression >> type
+			| absolute,relocatable:
+			  [ oChooseExpressionValue >> value
+				| 0-63:
+				  .aJumpSubroutineSOB
+				| *:
+				  #eBranchOutofRange
+			  ]
+			| *:
+			  #eIllegalBranchExpression
+		  ]
+		| *:
+		  #eMissingOperand
+	  ]
+	| trapInterrupt1:
+	  [
+		| pNumericLiteral:
+		  [
+			| 0-377:
+			  .aTrapInterrupt
+			| *:
+			  #eIllegalTrap
+		  ]
+		| *:
+		  #eIllegalTrap
+	  ]
+	| trapInterrupt2:
+	  .aTrapInterrupt
 	| conditionCode:
-	  >				%opcode is determined based solely on mnemonic
+	  .aConditionCode
 	| miscellaneous:
-	  @scanMiscellaneous		%operand is different depending on instruction
-	  >
+	  .aMiscellaneous
+	| miscellaneousSPL
+	  [
+		| pNumericLiteral:
+		  [
+			| 0-7:
+			  .aMiscellaneousSPL
+			| *:
+			  #eIllegalSPL
+		  ]
+		| *:
+		  #eIllegalSPL
+	  ]
   ];
 
 operand:

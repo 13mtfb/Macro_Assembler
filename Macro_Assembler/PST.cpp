@@ -12,9 +12,13 @@ enum operatorType {
 	DOUBLE_OPERAND_1,			// OPR src, dst
 	DOUBLE_OPERAND_2,			// OPR src, r | OPR r, dst
 	BRANCH,
-	JUMP_SUBROUTINE,
-	TRAP_INTERRUPT,
+	JUMP_SUBROUTINE_RTS,
+	JUMP_SUBROUTINE_MARK,
+	JUMP_SUBROUTINE_SOB,
+	TRAP_INTERRUPT_1,			// EMT, TRAP
+	TRAP_INTERRUPT_2,			// BPT, IOT, RTI, RTT
 	MISCELLANEOUS,
+	MISCELLANEOUS_SPL,
 	CONDITION_CODE,
 };
 
@@ -47,14 +51,14 @@ struct asmDir {									//note: not complete
 static const opCode instruction[] = {
 	{"HALT",	0000000, MISCELLANEOUS},		//halt
 	{"WAIT",	0000001, MISCELLANEOUS},		//wait for interrupt
-	{"RTI",		0000002, TRAP_INTERRUPT},		//return from interrupt
-	{"BPT",		0000003, TRAP_INTERRUPT},		//breakpoint trap
-	{"IOT",		0000004, TRAP_INTERRUPT},		//input/output trap
+	{"RTI",		0000002, TRAP_INTERRUPT_2},		//return from interrupt
+	{"BPT",		0000003, TRAP_INTERRUPT_2},		//breakpoint trap
+	{"IOT",		0000004, TRAP_INTERRUPT_2},		//input/output trap
 	{"RESET",	0000005, MISCELLANEOUS},		//reset external bus
-	{"RTT",		0000006, TRAP_INTERRUPT},		//return from interrupt
-	{"JMP",		0000100, JUMP_SUBROUTINE},		//jump
-	{"RTS",		0000200, JUMP_SUBROUTINE},		//return from subroutine
-	{"SPL",		0000230, MISCELLANEOUS},		//set priority level
+	{"RTT",		0000006, TRAP_INTERRUPT_2},		//return from interrupt
+	{"JMP",		0000100, SINGLE_OPERAND},		//jump
+	{"RTS",		0000200, JUMP_SUBROUTINE_RTS},	//return from subroutine
+	{"SPL",		0000230, MISCELLANEOUS_SPL},	//set priority level
 	{"NOP",		0000240, MISCELLANEOUS},		//no operation
 	{"CLC",		0000241, CONDITION_CODE},		//clear C
 	{"CLV",		0000242, CONDITION_CODE },		//clear V
@@ -74,7 +78,7 @@ static const opCode instruction[] = {
 	{"BLT",		0002400, BRANCH},				//br if less than (0)
 	{"BGT",		0003000, BRANCH},				//br if greater than (0)
 	{"BLE",		0003400, BRANCH},				//br if less or equal to (0)
-	{"JSR",		0004000, JUMP_SUBROUTINE},		//jump to subroutine
+	{"JSR",		0004000, DOUBLE_OPERAND_2},		//jump to subroutine
 	{"CLR",		0005000, SINGLE_OPERAND},		//clear
 	{"COM",		0005100, SINGLE_OPERAND},		//complement (1's)
 	{"INC",		0005200, SINGLE_OPERAND},		//increment
@@ -87,9 +91,9 @@ static const opCode instruction[] = {
 	{"ROL",		0006100, SINGLE_OPERAND},		//rotate left
 	{"ASR",		0006200, SINGLE_OPERAND},		//arith shift right
 	{"ASL",		0006300, SINGLE_OPERAND},		//arith shift left
-	{"MARK",	0006400, JUMP_SUBROUTINE},		//mark
-	{"MFPI",	0006500, MISCELLANEOUS},		//move from previous instr space
-	{"MTPI",	0006600, MISCELLANEOUS},		//move to previous instr space
+	{"MARK",	0006400, JUMP_SUBROUTINE_MARK},	//mark
+	{"MFPI",	0006500, SINGLE_OPERAND},		//move from previous instr space
+	{"MTPI",	0006600, SINGLE_OPERAND},		//move to previous instr space
 	{"SXT",		0006700, SINGLE_OPERAND},		//sign extend
 	{"MOV",		0010000, DOUBLE_OPERAND_1},		//move
 	{"CMP",		0020000, DOUBLE_OPERAND_1},		//compare
@@ -106,7 +110,7 @@ static const opCode instruction[] = {
 	//FSUB
 	//FMUL
 	//FDIV
-	{"SOB",		0077000, JUMP_SUBROUTINE},		//subtract 1 & br (if !=0)
+	{"SOB",		0077000, JUMP_SUBROUTINE_SOB},	//subtract 1 & br (if !=0)
 	{"BPL",		0100000, BRANCH},				//branch if plus 
 	{"BMI",		0100400, BRANCH},				//branch if minus
 	{"BHI",		0101000, BRANCH},				//branch if higher
@@ -117,8 +121,8 @@ static const opCode instruction[] = {
 	{"BHIS",	0103000, BRANCH},				//branch if higher or same
 	{"BCS",		0103400, BRANCH},				//br if carry is set
 	{"BLO",		0103400, BRANCH},				//branch if lower
-	{"EMT",		0104000, TRAP_INTERRUPT},		//emulator trap
-	{"TRAP",	0104400, TRAP_INTERRUPT},		//trap
+	{"EMT",		0104000, TRAP_INTERRUPT_1},		//emulator trap
+	{"TRAP",	0104400, TRAP_INTERRUPT_1},		//trap
 	{"CLRB",	0105000, SINGLE_OPERAND},		//clear (byte)
 	{"COMB",	0105100, SINGLE_OPERAND},		//complement (1's) (byte)
 	{"INCB",	0105200, SINGLE_OPERAND},		//increment (byte)
@@ -131,8 +135,8 @@ static const opCode instruction[] = {
 	{"ROLB",	0106100, SINGLE_OPERAND},		//rotate left (byte)
 	{"ASRB",	0106200, SINGLE_OPERAND},		//arith shift right (byte)
 	{"ASLB",	0106300, SINGLE_OPERAND},		//arith shift left (byte)
-	{"MFPD",	0106500, MISCELLANEOUS},		//move from previous data space
-	{"MTPD",	0106600, MISCELLANEOUS},		//move to previous data space
+	{"MFPD",	0106500, SINGLE_OPERAND},		//move from previous data space
+	{"MTPD",	0106600, SINGLE_OPERAND},		//move to previous data space
 	{"MOVB",	0110000, DOUBLE_OPERAND_1},		//move (byte)
 	{"CMPB",	0120000, DOUBLE_OPERAND_1},		//compare (byte)
 	{"BITB",	0130000, DOUBLE_OPERAND_1},		//bit test (AND) (byte)
