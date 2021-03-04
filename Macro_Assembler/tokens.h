@@ -83,3 +83,57 @@ const vector<string> screenerTokensASCII = {
 	"macroCall",
 	"symbol"
 };
+
+enum parserTokens {
+	//Addressing modes
+	aRegisterMode,							// (R)
+	aRegisterDeferredMode,					// (@R or (ER))
+	aAutoIncrementMode,						// ((ER + ))
+	aAutoIncrementDeferredMode,				// (@(ER) + )
+	aAutoDecrementMode,						// (-(ER))
+	aAutoDecrementDeferredMode,				// (@-(ER))
+	aIndexMode,								// (E(ER))
+	aIndexDeferredMode,						// (@E(ER)
+	aImmediateMode,							// (#E)
+	aAbsoluteMode,							// (@#E)
+	aRelativeMode,							// (E)
+	aRelativeDeferredMode,					// (@E)
+	//instruction emit
+	aSingleOperand,
+	aDoubleOperand,
+	aBranch,
+	aJumpSubroutineRTS,
+	aJumpSubroutineMARK,
+	aJumpSubroutineSOB,
+	aTrapInterrupt,
+	aConditionCode,
+	aMiscellaneous,
+	aMiscellaneousSPL
+};
+
+const vector<string> parserTokens = {
+	//Addressing modes
+	"aRegisterMode",
+	"aRegisterDeferredMode",
+	"aAutoIncrementMode",
+	"aAutoIncrementDeferredMode",
+	"aAutoDecrementMode",
+	"aAutoDecrementDeferredMode",
+	"aIndexMode",
+	"aIndexDeferredMode",
+	"aImmediateMode",
+	"aAbsoluteMode",
+	"aRelativeMode",
+	"aRelativeDeferredMode",
+	//instruction emit
+	"aSingleOperand",
+	"aDoubleOperand",
+	"aBranch",
+	"aJumpSubroutineRTS",
+	"aJumpSubroutineMARK",
+	"aJumpSubroutineSOB",
+	"aTrapInterrupt",
+	"aConditionCode",
+	"aMiscellaneous",
+	"aMiscellaneousSPL"
+};
