@@ -155,7 +155,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Macro_Assembler.cpp" />
-    <ClCompile Include="PST.cpp" />
+    <ClCompile Include="parser.cpp" />
+    <ClCompile Include="PST.h" />
     <ClCompile Include="scanner.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -38,11 +38,14 @@
     <ClCompile Include="Macro_Assembler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PST.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="scanner.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PST.h">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

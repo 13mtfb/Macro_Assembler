@@ -68,3 +68,18 @@ const vector<string> scannerTokensASCII = {
 	"pEOF",
 	"eIllegalChar"
 };
+
+
+enum screenerTokens {
+	OPCODE,
+	ASSEMBLERDIRECTIVE,
+	MACROCALL,
+	SYMBOL
+};
+
+const vector<string> screenerTokensASCII = {
+	"opcode",
+	"assemblerDirective",
+	"macroCall",
+	"symbol"
+};

@@ -29,7 +29,12 @@ enum directiveType {
 	BLKB,
 	BLKW,
 	BYTE,
+	// others 
+	END,
 	// others
+	MCALL,
+	// others
+	TITLE,
 	WORD
 };
 
@@ -155,5 +160,10 @@ static const asmDir directive[]{				// note: not complete
 	{".BLKW",		BLKW},
 	{".BYTE",		BYTE},
 	// others
+	{".END",		END},
+	// others
+	{".MCALL",		MCALL},
+	// others
+	{".TITLE",		TITLE},
 	{".WORD",		WORD}
 };
