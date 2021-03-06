@@ -40,6 +40,10 @@ oChooseExpression
 	% return the most recently evaluated expression type (absolute, relocatable, external, complex relocatable)
 oChooseExpressionValue
 	% return the value of the most recently evaluated expression (must be absolute expression)
+oPushlabel(label)
+	%Push the label to the UST along with the value of the current location counter
+oPushAssignment(equate)
+	%Push the equate to the UST along with the value of the assignment statement
 oChooseSymbol (symbol)
 	% return the type of expression
 		Opcode - if symbol matches string in opcode table (PST)
@@ -72,6 +76,7 @@ parse:				// will exist in mainline (not as parser object)
 statement:
   [
 	| pLabel,pGlobalLabel:
+	  oPushLabel
 	  @statement
 	| pSymbol:
 	  [ oChooseSymbol >> type
@@ -81,10 +86,11 @@ statement:
 		  @assemblerDirective
 		| MacroCall:			%previously defined macro in MST
 		  @macroCall
-		| Symbol:			%direct assignment statement
+		| Unknown:			%direct assignment statement
 		  [
-			| pEquals:
+			| pEquals,doubleEquals :
 		  	  @expression
+			  oPushAssignment
 			| *:
 			  #eIllegalStatement
 		  ]
@@ -96,6 +102,8 @@ statement:
 		| *:
 		  #eIllegalStatement
 	  ]
+	| pNewLine:
+	  >
         | *:
 	  #eIllegalStatement
   ];

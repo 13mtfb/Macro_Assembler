@@ -74,7 +74,8 @@ enum screenerTokens {
 	OPCODE,
 	ASSEMBLERDIRECTIVE,
 	MACROCALL,
-	SYMBOL
+	SYMBOL,
+	UNKNOWN
 };
 
 const vector<string> screenerTokensASCII = {
