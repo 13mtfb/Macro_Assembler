@@ -11,9 +11,10 @@ public:
 	parser();							//constructs a parser object
 	int screener(string symbol);
 	void parse(vector<int>line, vector<string>compound);
+	int statement();
+	void printUST();
 private:
 	//parse methods
-	int statement();
 	int opcode();
 	int operand();
 	int registerexpression();
@@ -22,6 +23,7 @@ private:
 
 	//private data
 	opCode op;
+	int reg;
 
 	//// UTILITY METHODS ////
 	int returnCurrentToken();

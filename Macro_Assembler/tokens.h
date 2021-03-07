@@ -75,6 +75,7 @@ enum screenerTokens {
 	ASSEMBLERDIRECTIVE,
 	MACROCALL,
 	SYMBOL,
+	REGISTER,
 	UNKNOWN
 };
 
@@ -82,7 +83,9 @@ const vector<string> screenerTokensASCII = {
 	"opcode",
 	"assemblerDirective",
 	"macroCall",
-	"symbol"
+	"symbol",
+	"register",
+	"unknown"
 };
 
 enum parserTokens {

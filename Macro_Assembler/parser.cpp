@@ -11,7 +11,7 @@ using namespace std;
 
 //// PUBLIC METHODS ////
 parser::parser(){
-	locationCounter = 0;
+	locationCounter = 00;
 	UST.clear();
 }
 
@@ -23,19 +23,22 @@ void parser::parse(vector<int>l, vector<string>c) {
 }
 
 int parser::statement() {								// for now, an error is returned as -1
-	switch (returnCurrentToken()) {
+	switch (returnNextToken()) {
 	case pLabel:
 		oPushLabel(returnNextCompound(), false);
+		cout << "parsed pLabel" << endl;
 		return statement();
 		break;
 	case pGlobalLabel:
 		oPushLabel(returnNextCompound(), true);
+		cout << "parsed pGlobalLabel" << endl;
 		return statement();
 		break;
 	case pSymbol:
 		switch (screener(returnNextCompound())) {
 		case OPCODE:
 			// screener loads variable 'opcode' with operator from PST
+			cout << "parsed opcode" << endl;
 			return opcode();
 		case ASSEMBLERDIRECTIVE:
 			// TODO
@@ -66,6 +69,7 @@ int parser::statement() {								// for now, an error is returned as -1
 			return -1;
 		}
 	case pNewLine:
+	case pEOF:
 		return 0;
 		break;
 	default:
@@ -75,12 +79,28 @@ int parser::statement() {								// for now, an error is returned as -1
 
 int parser::screener(string symbol) {
 	// return enum which matches type of symbol
-	int screenerReturn = SYMBOL;
+	int screenerReturn = UNKNOWN;
 
 	//length of PST arrays
 	int instructionLength = sizeof(instruction) / sizeof(opCode);
 	int directiveLength = sizeof(directive) / sizeof(asmDir);
-	int USTLength = sizeof(UST) / sizeof(userSymbol);
+
+	string registerDefinitions[] = {
+		"R1",
+		"R2",
+		"R3",
+		"R4",
+		"R5",
+		"SP",
+		"PC"
+	};
+
+	for (int i = 0; i < 7; i++) {
+		if (symbol == registerDefinitions[i]) {
+			reg = i;
+			screenerReturn = REGISTER;
+		}
+	}
 
 
 	for (int i = 0; i < instructionLength; i++) {
@@ -96,7 +116,7 @@ int parser::screener(string symbol) {
 			screenerReturn = ASSEMBLERDIRECTIVE;
 		}
 	}
-	for (int i = 0; i < USTLength; i++) {
+	for (int i = 0; i < UST.size(); i++) {
 		if (symbol == UST[i].name) {
 			//TODO:
 			// create sym variable in class and set to type (or value?)
@@ -109,11 +129,36 @@ int parser::screener(string symbol) {
 	return screenerReturn;
 }
 
+void parser::printUST() {
+	cout << "NAME\tVALUE\tGLOBAL\tTYPE" << endl;
+	string global, type;
+
+	for (int i = 0; i < UST.size(); i++) {
+		if (UST[i].global) {
+			global = "Y";
+		}
+		else {
+			global = "N";
+		}
+		if (UST[i].ATTRIBUTE == userSymbol::LABEL) {
+			type = "LABEL";
+		}
+		else {
+			type = "SYMBOL";
+		}
+		cout << UST[i].name << "\t";
+		cout << std::oct << UST[i].value << "\t";
+		cout << global << "\t";
+		cout << type << endl;
+	}
+
+}
+
 //// PRIVATE METHODS ////
 int parser::opcode() {
-	switch (op.opcode) {
+	switch (op.operatortype) {
 	case SINGLE_OPERAND:
-		//TODO
+		return operand();
 		break;
 	case DOUBLE_OPERAND_1:
 		//TODO
@@ -159,8 +204,13 @@ int parser::operand() {
 	switch (returnNextToken()) {
 	case pSymbol:
 		switch (screener(returnNextCompound())) {
-			case 
-
+		case REGISTER:
+			locationCounter += 2;
+			cout << "aRegisterMode" << endl;
+			return 0;
+		default:
+			//expression
+			return 0;
 		}
 
 
@@ -168,7 +218,7 @@ int parser::operand() {
 
 
 	}
-
+	return -1;
 }
 
 int parser::expression() {
