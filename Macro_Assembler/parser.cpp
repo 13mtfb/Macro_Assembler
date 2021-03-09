@@ -68,11 +68,17 @@ int parser::statement() {								// for now, an error is returned as -1
 		else {
 			return -1;
 		}
+		break;
 	case pNewLine:
+		cout << "parsed pNewLine" << endl;
+		return 0;
+		break;
 	case pEOF:
+		cout << "parsed pEOF" << endl;
 		return 0;
 		break;
 	default:
+		cout << "eIllegalStatement" << endl;
 		return -1;
 	}
 }
@@ -155,12 +161,60 @@ void parser::printUST() {
 }
 
 //// PRIVATE METHODS ////
+
+// for all methods with an integer return type, the following return value applies:
+	//  0 - successful
+	// -X - error
+
 int parser::opcode() {
 	switch (op.operatortype) {
 	case SINGLE_OPERAND:
-		return operand();
+		locationCounter += 2;
+		cout << "aSingleOperand" << endl;
+		if (!operand()) {
+			switch (returnNextToken()) {
+			case pNewLine:
+				return 0;
+				break;
+			default:
+				//TODO:
+				// Replace with eIllegalStatement error
+				return -1;
+			}
+		}
 		break;
 	case DOUBLE_OPERAND_1:
+		locationCounter += 2;
+		cout << "aDoubleOperand" << endl;
+		if (!operand()) {	// if successful
+			switch (returnNextToken()) {
+			case pOperandFieldSeperator:
+				if (!operand()) {
+					switch (returnNextToken()) {
+					case pNewLine:
+						return 0;
+						break;
+					default:
+						//TODO:
+						// Replace with eIllegalStatement error
+						return -1;
+					}
+				}
+				else {
+					//TODO:
+					// Replace with eIllegalStatement error
+					return -1;
+				}
+				break;
+			default:
+				//TODO:
+				// Replace with eMissingOperator error
+				return -1;
+			}
+		}
+		else {				// else not successful
+			return -1;
+		}
 		//TODO
 		break;
 	case DOUBLE_OPERAND_2:
@@ -205,23 +259,185 @@ int parser::operand() {
 	case pSymbol:
 		switch (screener(returnNextCompound())) {
 		case REGISTER:
-			locationCounter += 2;
 			cout << "aRegisterMode" << endl;
 			return 0;
+			break;
 		default:
 			//expression
+			//TODO
+			// add aIndexMode, aRelativeMode
 			return 0;
 		}
-
-
-
-
-
+		break;
+	case pDeferredAddressingIndicator:
+		switch (returnNextToken()) {
+		case pSymbol:
+			switch (screener(returnNextCompound())) {
+			case REGISTER:
+				cout << "aRegisterDeferredMode" << endl;
+				return 0;
+				break;
+			default:
+				//expression
+				//TODO
+				// add aIndexDeferredMode, aRelativeDeferredMode
+				return 0;	
+			}
+			break;
+		case pMinus:
+			switch (returnNextToken()) {
+			case pLeftParen:
+				if (!registerexpression()){
+					switch (returnNextToken()) {
+					case pRightParen:
+						locationCounter += 2;
+						cout << "aAutoDecrementDeferredMode" << endl;
+						return 0;
+						break;
+					default:
+						//TODO
+						// Replace with eIllegalOperandSpecification error
+						return -1;
+					}
+				}
+				else {
+					//TODO
+					// Replace with eIllegalOperandSpecification error
+					return -1;
+				}
+				break;
+			default:
+				//TODO
+				// Replace with eIllegalOperandSpecification error
+				return -1;
+			}
+			break;
+		case pLeftParen:
+			if (!registerexpression()) {
+				switch (returnNextToken()) {
+				case pRightParen:
+					switch (returnNextToken()) {
+					case pPlus:
+						locationCounter += 2;
+						cout << "aAutoIncrementDeferredMode" << endl;
+						return 0;
+						break;
+					default:
+						//TODO
+						// Replace with eIllegalOperandSpecification error
+						return -1;
+					}
+					break;
+				default:
+					//TODO
+					// Replace with eIllegalOperandSpecification error
+					return -1;
+				}
+			}
+			else {
+				//TODO
+				// Replace with eIllegalOperandSpecification error
+				return -1;
+			}
+			break;
+		case pImmediateExpressionIndicator:
+			if (!expression()) {
+				locationCounter += 2;
+				cout << "aAbsoluteMode" << endl;
+				return 0;
+			}
+			else {
+				//TODO
+				// Replace with eIllegalOperandSpecification error
+				return -1;
+			}
+			break;
+		default:
+			//TODO
+			// Replace with eIllegalOperandSpecification error
+			return -1;
+		}
+	case pLeftParen:
+		if (!registerexpression()) {
+			switch (returnNextToken()) {
+			case pRightParen:
+				switch (returnNextToken()) {
+				case pPlus:
+					locationCounter += 2;
+					cout << "aAutoIncrementDeferredMode" << endl;
+					return 0;
+					break;
+				default:
+					//TODO
+					// Replace with eIllegalOperandSpecification error
+					return -1;
+				}
+				break;
+			default:
+				//TODO
+				// Replace with eIllegalOperandSpecification error
+				return -1;
+			}
+		}
+		else {
+			//TODO
+			// Replace with eIllegalOperandSpecification error
+			return -1;
+		}
+		break;
+	case pMinus:
+		switch (returnNextToken()) {
+			case pLeftParen:
+				if (!registerexpression()){
+					switch (returnNextToken()) {
+					case pRightParen:
+						locationCounter += 2;
+						cout << "aAutoDecrementMode" << endl;
+						return 0;
+						break;
+					default:
+						//TODO
+						// Replace with eIllegalOperandSpecification error
+						return -1;
+					}
+				}
+				else {
+					//TODO
+					// Replace with eIllegalOperandSpecification error
+					return -1;
+				}
+				break;
+			default:
+				//TODO
+				// Replace with eIllegalOperandSpecification error
+				return -1;
+			}
+			break;
+	case pImmediateExpressionIndicator:
+		if (!expression()) {
+			locationCounter += 2;
+			cout << "aAbsoluteMode" << endl;
+			return 0;
+		}
+		else {
+			//TODO
+			// Replace with eIllegalOperandSpecification error
+			return -1;
+		}
+		break;
+	default:
+		//TODO
+		// Replace with eIllegalOperandSpecification error
+		return -1;
 	}
-	return -1;
 }
 
 int parser::expression() {
+	//TODO
+	return 0;
+}
+
+int parser::registerexpression() {
 	//TODO
 	return 0;
 }

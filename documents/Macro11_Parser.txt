@@ -288,7 +288,7 @@ operand:
 	| pMinus:
 	  [
 		| pLeftParen:
-		  @expression
+		  @registerExpression
 		  [
 			| pRightParen:
 			  .aAutoDecrementMode
