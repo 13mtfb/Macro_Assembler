@@ -187,7 +187,8 @@ int parser::opcode() {
 		locationCounter += 2;
 		cout << "aDoubleOperand" << endl;
 		if (!operand()) {	// if successful
-			switch (returnNextToken()) {
+			cout << "does it get here?" << endl;
+			switch (returnCurrentToken()) {
 			case pOperandFieldSeperator:
 				if (!operand()) {
 					switch (returnNextToken()) {
@@ -263,10 +264,33 @@ int parser::operand() {
 			return 0;
 			break;
 		default:
-			//expression
-			//TODO
-			// add aIndexMode, aRelativeMode
-			return 0;
+			switch (expression()) {
+			case 0:
+				switch (returnNextToken()) {
+				case pLeftParen:
+					switch (registerexpression()) {
+					case pRightParen:
+						locationCounter += 2;
+						cout << "aIndexMode" << endl;
+						return 0;
+						break;
+					default:
+						return -1;
+						//TODO
+						// Replace with eIllegalOperandSpecification error
+					}
+					break;
+				default:
+					locationCounter += 2;
+					cout << "aRelativeMode" << endl;
+				}
+				break;
+			case -1:
+				return -1;
+				//TODO
+				// Replace with eIllegalOperandSpecification error
+				break;
+			}
 		}
 		break;
 	case pDeferredAddressingIndicator:
@@ -278,16 +302,40 @@ int parser::operand() {
 				return 0;
 				break;
 			default:
-				//expression
-				//TODO
-				// add aIndexDeferredMode, aRelativeDeferredMode
-				return 0;	
+				switch (expression()) {
+				case 0:
+					switch (returnNextToken()) {
+					case pLeftParen:
+						switch (registerexpression()) {
+						case pRightParen:
+							locationCounter += 2;
+							cout << "aIndexDeferredMode" << endl;
+							return 0;
+							break;
+						default:
+							return -1;
+							//TODO
+							// Replace with eIllegalOperandSpecification error
+						}
+						break;
+					default:
+						locationCounter += 2;
+						cout << "aRelativeDeferredMode" << endl;
+					}
+					break;
+				case -1:
+					return -1;
+					//TODO
+					// Replace with eIllegalOperandSpecification error
+					break;
+				}
 			}
 			break;
 		case pMinus:
 			switch (returnNextToken()) {
 			case pLeftParen:
-				if (!registerexpression()){
+				switch(registerexpression()){
+				case 0:
 					switch (returnNextToken()) {
 					case pRightParen:
 						locationCounter += 2;
@@ -299,8 +347,8 @@ int parser::operand() {
 						// Replace with eIllegalOperandSpecification error
 						return -1;
 					}
-				}
-				else {
+				break;
+				case -1:
 					//TODO
 					// Replace with eIllegalOperandSpecification error
 					return -1;
@@ -313,7 +361,8 @@ int parser::operand() {
 			}
 			break;
 		case pLeftParen:
-			if (!registerexpression()) {
+			switch (registerexpression()) {
+			case 0:
 				switch (returnNextToken()) {
 				case pRightParen:
 					switch (returnNextToken()) {
@@ -333,20 +382,21 @@ int parser::operand() {
 					// Replace with eIllegalOperandSpecification error
 					return -1;
 				}
-			}
-			else {
+				break;
+			case -1:
 				//TODO
 				// Replace with eIllegalOperandSpecification error
 				return -1;
 			}
 			break;
 		case pImmediateExpressionIndicator:
-			if (!expression()) {
+			switch (expression()) {
+			case 0:
 				locationCounter += 2;
 				cout << "aAbsoluteMode" << endl;
 				return 0;
-			}
-			else {
+				break;
+			case -1:
 				//TODO
 				// Replace with eIllegalOperandSpecification error
 				return -1;
@@ -358,19 +408,20 @@ int parser::operand() {
 			return -1;
 		}
 	case pLeftParen:
-		if (!registerexpression()) {
+		switch (registerexpression()) {
+		case 0:
 			switch (returnNextToken()) {
 			case pRightParen:
 				switch (returnNextToken()) {
 				case pPlus:
 					locationCounter += 2;
-					cout << "aAutoIncrementDeferredMode" << endl;
+					cout << "aAutoIncrementMode" << endl;
 					return 0;
 					break;
 				default:
-					//TODO
-					// Replace with eIllegalOperandSpecification error
-					return -1;
+					locationCounter += 2;
+					cout << "aRegisterDeferredMode" << endl;
+					return -0;
 				}
 				break;
 			default:
@@ -378,8 +429,8 @@ int parser::operand() {
 				// Replace with eIllegalOperandSpecification error
 				return -1;
 			}
-		}
-		else {
+			break;
+		case -1:
 			//TODO
 			// Replace with eIllegalOperandSpecification error
 			return -1;
@@ -388,7 +439,8 @@ int parser::operand() {
 	case pMinus:
 		switch (returnNextToken()) {
 			case pLeftParen:
-				if (!registerexpression()){
+				switch (registerexpression()) {
+				case 0:
 					switch (returnNextToken()) {
 					case pRightParen:
 						locationCounter += 2;
@@ -400,13 +452,12 @@ int parser::operand() {
 						// Replace with eIllegalOperandSpecification error
 						return -1;
 					}
-				}
-				else {
+					break;
+				case -1:
 					//TODO
 					// Replace with eIllegalOperandSpecification error
 					return -1;
 				}
-				break;
 			default:
 				//TODO
 				// Replace with eIllegalOperandSpecification error
@@ -414,12 +465,13 @@ int parser::operand() {
 			}
 			break;
 	case pImmediateExpressionIndicator:
-		if (!expression()) {
+		switch (expression()) {
+		case 0:
 			locationCounter += 2;
-			cout << "aAbsoluteMode" << endl;
+			cout << "aImmediateMode" << endl;
 			return 0;
-		}
-		else {
+			break;
+		case -1:
 			//TODO
 			// Replace with eIllegalOperandSpecification error
 			return -1;
@@ -433,13 +485,122 @@ int parser::operand() {
 }
 
 int parser::expression() {
-	//TODO
+	switch (term()) {
+	case 0:	//successful
+		switch (returnNextToken()) {
+		case pPlus:
+		case pMinus:
+		case pMultiply:
+		case pDivide:
+		case pAnd:
+		case pOr:
+			// oPushExpressionOperator
+			return expression();
+		default:
+			return 0;
+		}
+	case -1:
+		return -1;
+	}
 	return 0;
 }
 
 int parser::registerexpression() {
-	//TODO
-	return 0;
+	switch (returnNextToken()) {
+	case pSymbol:
+		switch (screener(returnNextCompound())) {
+		case REGISTER:
+			return 0;
+			break;
+		default:
+			switch (expression()) {
+			case 0:
+				//oChooseExpression >> Type
+				return 0;
+				break;
+			case -1:
+				return -1;
+				//TODO
+				// Replace with eIllegalRegisterExpression error
+			}
+		}
+	default:
+		return -1;
+		//TODO
+		// Replace with eIllegalRegisterExpression error
+	}
+}
+
+int parser::term() {
+	switch (returnNextToken()) {
+	case pPlus:
+	case pMinus:
+	case pUnary:
+		//oPushTermOperator
+		return term();
+		break;
+	case pLeftBracket:
+		return expression();
+		switch (returnNextToken()) {
+		case pRightBracket:
+			//oEvaluateTerm
+			return 0;
+			break;
+		default:
+			return -1;
+			//TODO
+			// Replace with eIllegalTerm error
+		}
+		break;
+	case pNumericLiteral:
+		//oEvaluateTerm
+		return 0;
+		break;
+	case pSymbol:
+		switch (screener(returnNextCompound())) {
+		case SYMBOL:
+		case OPCODE:
+		case UNKNOWN:
+			//oEvaluateTerm
+			return 0;
+			break;
+		default:
+			return -1;
+			// Replace with eIllegalTerm error
+		}
+		break;
+	case pSingleASCII:
+		switch (returnNextToken()) {
+		case pSymbol:
+			//check if single ASCII character
+			//oEvaluateTerm
+			return 0;
+			break;
+		default:
+			return -1;
+			//TODO
+			// Replace with eIllegalTerm error
+		}
+		break;
+	case pDoubleASCII:
+		switch (returnNextToken()) {
+		case pSymbol:
+			//check if double ASCII character
+			//oEvaluateTerm
+			return 0;
+			break;
+		default:
+			return -1;
+			//TODO
+			// Replace with eIllegalTerm error
+		}
+		break;
+	default:
+		return -1;
+		//TODO
+		// Replace with eIllegalTerm error
+	}
+
 }
 
 //// UTILITY METHODS ////
