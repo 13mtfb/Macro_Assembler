@@ -576,19 +576,29 @@ int parser::term() {
 		return term();
 		break;
 	case pLeftBracket:
-		return expression();
-		switch (returnNextToken()) {
-		case pRightBracket:
-			//oEvaluateTerm
-			return 0;
-			break;
-		default:
+		switch (expression()) {
+		case 0:
+			switch (returnNextToken()) {
+			case pRightBracket:
+				//oEvaluateTerm
+				return 0;
+				break;
+			default:
+				return -1;
+				//TODO
+				// Replace with eIllegalTerm error
+			}
+		case -1:
 			return -1;
 			//TODO
 			// Replace with eIllegalTerm error
 		}
 		break;
 	case pNumericLiteral:
+		//oEvaluateTerm
+		return 0;
+		break;
+	case pPeriod:
 		//oEvaluateTerm
 		return 0;
 		break;
