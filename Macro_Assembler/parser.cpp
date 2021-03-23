@@ -92,6 +92,7 @@ int parser::screener(string symbol) {
 	int directiveLength = sizeof(directive) / sizeof(asmDir);
 
 	string registerDefinitions[] = {
+		"R0",
 		"R1",
 		"R2",
 		"R3",
@@ -101,7 +102,7 @@ int parser::screener(string symbol) {
 		"PC"
 	};
 
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < 8; i++) {
 		if (symbol == registerDefinitions[i]) {
 			reg = i;
 			screenerReturn = REGISTER;
@@ -187,8 +188,7 @@ int parser::opcode() {
 		locationCounter += 2;
 		cout << "aDoubleOperand" << endl;
 		if (!operand()) {	// if successful
-			cout << "does it get here?" << endl;
-			switch (returnCurrentToken()) {
+			switch (returnNextToken()) {
 			case pOperandFieldSeperator:
 				if (!operand()) {
 					switch (returnNextToken()) {
@@ -196,18 +196,21 @@ int parser::opcode() {
 						return 0;
 						break;
 					default:
+						cout << "Error expected newline, got: "<< scannerTokensASCII[returnCurrentToken()]<< endl;
 						//TODO:
 						// Replace with eIllegalStatement error
 						return -1;
 					}
 				}
 				else {
+					cout << "Error illegal operand" << endl;
 					//TODO:
 					// Replace with eIllegalStatement error
 					return -1;
 				}
 				break;
 			default:
+				cout << "Error expected OperandFieldSeperator, got: " << scannerTokensASCII[returnCurrentToken()] << endl;
 				//TODO:
 				// Replace with eMissingOperator error
 				return -1;
@@ -264,15 +267,27 @@ int parser::operand() {
 			return 0;
 			break;
 		default:
+			//re-adjust line/compound index to point to first 
+			//token in expression
+			lineIndex--;
+			compoundIndex--;
 			switch (expression()) {
 			case 0:
 				switch (returnNextToken()) {
 				case pLeftParen:
 					switch (registerexpression()) {
-					case pRightParen:
-						locationCounter += 2;
-						cout << "aIndexMode" << endl;
-						return 0;
+					case 0:
+						switch (returnNextToken()) {
+						case pRightParen:
+							locationCounter += 2;
+							cout << "aIndexMode" << endl;
+							return 0;
+							break;
+						default:
+							return -1;
+							//TODO
+							// Replace with eIllegalOperandSpecification error
+						}
 						break;
 					default:
 						return -1;
@@ -281,8 +296,12 @@ int parser::operand() {
 					}
 					break;
 				default:
+					//re-adjust line index to point to token 
+					//immediately after expression
+					lineIndex--;
 					locationCounter += 2;
 					cout << "aRelativeMode" << endl;
+					return 0;
 				}
 				break;
 			case -1:
@@ -302,15 +321,27 @@ int parser::operand() {
 				return 0;
 				break;
 			default:
+				//re-adjust line/compound index to point to first 
+				//token in expression
+				lineIndex--;
+				compoundIndex--;
 				switch (expression()) {
 				case 0:
 					switch (returnNextToken()) {
 					case pLeftParen:
 						switch (registerexpression()) {
-						case pRightParen:
-							locationCounter += 2;
-							cout << "aIndexDeferredMode" << endl;
-							return 0;
+						case 0:
+							switch (returnNextToken()) {
+							case pRightParen:
+								locationCounter += 2;
+								cout << "aIndexDeferredMode" << endl;
+								return 0;
+								break;
+							default:
+								return -1;
+								//TODO
+								// Replace with eIllegalOperandSpecification error
+							}
 							break;
 						default:
 							return -1;
@@ -319,8 +350,12 @@ int parser::operand() {
 						}
 						break;
 					default:
+						//re-adjust line index to point to token 
+						//immediately after expression
+						lineIndex--;
 						locationCounter += 2;
 						cout << "aRelativeDeferredMode" << endl;
+						return 0;
 					}
 					break;
 				case -1:
@@ -338,7 +373,6 @@ int parser::operand() {
 				case 0:
 					switch (returnNextToken()) {
 					case pRightParen:
-						locationCounter += 2;
 						cout << "aAutoDecrementDeferredMode" << endl;
 						return 0;
 						break;
@@ -367,7 +401,6 @@ int parser::operand() {
 				case pRightParen:
 					switch (returnNextToken()) {
 					case pPlus:
-						locationCounter += 2;
 						cout << "aAutoIncrementDeferredMode" << endl;
 						return 0;
 						break;
@@ -414,12 +447,13 @@ int parser::operand() {
 			case pRightParen:
 				switch (returnNextToken()) {
 				case pPlus:
-					locationCounter += 2;
 					cout << "aAutoIncrementMode" << endl;
 					return 0;
 					break;
 				default:
-					locationCounter += 2;
+					//re-adjust line index to point to token 
+					//immediately after expression
+					lineIndex--;
 					cout << "aRegisterDeferredMode" << endl;
 					return -0;
 				}
@@ -443,7 +477,6 @@ int parser::operand() {
 				case 0:
 					switch (returnNextToken()) {
 					case pRightParen:
-						locationCounter += 2;
 						cout << "aAutoDecrementMode" << endl;
 						return 0;
 						break;
@@ -497,6 +530,9 @@ int parser::expression() {
 			// oPushExpressionOperator
 			return expression();
 		default:
+			//re-adjust line index to point to token 
+			//immediately after expression
+			lineIndex--;
 			return 0;
 		}
 	case -1:

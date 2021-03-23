@@ -1,0 +1,36 @@
+
+; Register Mode
+HELLO:: MOV R1,R2		; HELLO = 0
+
+; Register deferred Mode
+HELL2:: MOV (R3),@R4		; HELL2 = 2
+
+; AutoIncrement Mode
+HELL3: MOV (R4)+,(R5)+		; HELL3 = 4
+
+; AutoIncrement Deferred Mode
+HELL4: MOV @(PC)+,@(SP)+	; HELL4 = 6
+
+; AutoDecrement Mode
+HELL5:: MOV -(R3),-(R4)		; HELL5 = 10
+
+; AutoDecrement Deferred Mode
+HELL6: MOV @-(R1),@-(R3)	; HELL6 = 12
+
+; Index Mode
+HELL7: MOV EXP(R1), EXP(R2)	; HELL7 = 14
+
+; Index Deferred Mode
+HELL8:: MOV @EXP(R5),@EXP(PC)	; HELL8 = 22
+
+; Immediate Mode
+HELL9:: MOV #EXP,#EXP		; HELL9 = 30
+
+; Absolute Mode
+HEL10: MOV @#EXP,@#EXP		; HEL10 = 36
+
+; Relative Mode
+HEL11: MOV EXP, EXP		; HEL11 = 44
+
+; Relative Deferred Mode
+HEL12: MOV @EXP,@EXP		; HEL12 = 52
