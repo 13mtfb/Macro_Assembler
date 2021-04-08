@@ -509,11 +509,48 @@ int parser::operand() {
 			// Replace with eIllegalOperandSpecification error
 			return -1;
 		}
-		break;
+		break;	
 	default:
-		//TODO
-		// Replace with eIllegalOperandSpecification error
-		return -1;
+		lineIndex--;
+		switch (expression()) {
+		case 0:
+			switch (returnNextToken()) {
+			case pLeftParen:
+				switch (registerexpression()) {
+				case 0:
+					switch (returnNextToken()) {
+					case pRightParen:
+						locationCounter += 2;
+						cout << "aIndexMode" << endl;
+						return 0;
+						break;
+					default:
+						return -1;
+						//TODO
+						// Replace with eIllegalOperandSpecification error
+					}
+					break;
+				default:
+					return -1;
+					//TODO
+					// Replace with eIllegalOperandSpecification error
+				}
+				break;
+			default:
+				//re-adjust line index to point to token 
+				//immediately after expression
+				lineIndex--;
+				locationCounter += 2;
+				cout << "aRelativeMode" << endl;
+				return 0;
+			}
+			break;
+		case -1:
+			return -1;
+			//TODO
+			// Replace with eIllegalOperandSpecification error
+			break;
+		}
 	}
 }
 
@@ -595,6 +632,7 @@ int parser::term() {
 		}
 		break;
 	case pNumericLiteral:
+		returnNextCompound(); //for now, just consume compound token
 		//oEvaluateTerm
 		return 0;
 		break;
