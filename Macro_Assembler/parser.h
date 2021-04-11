@@ -17,6 +17,7 @@ private:
 	//parse methods
 	int opcode();
 	int operand();
+	int indexOrRelative();
 	int registerexpression();
 	int expression();
 	int term();

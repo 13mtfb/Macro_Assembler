@@ -284,59 +284,10 @@ int parser::operand() {
 			return 0;
 			break;
 		default:
-			//re-adjust line/compound index to point to first 
+			//re-adjust compound index to point to first 
 			//token in expression
-			lineIndex--;
 			compoundIndex--;
-			switch (expression()) {
-			case 0:
-				switch (returnNextToken()) {
-				case pLeftParen:
-					switch (registerexpression()) {
-					case 0:
-						switch (returnNextToken()) {
-						case pRightParen:
-							locationCounter += 2;
-							if (!deferredAddressing){
-								cout << "aIndexMode" << endl;
-							}
-							else {
-								cout << "aIndexDeferredMode" << endl;
-							}
-							return 0;
-							break;
-						default:
-							return -1;
-							//TODO
-							// Replace with eIllegalOperandSpecification error
-						}
-						break;
-					default:
-						return -1;
-						//TODO
-						// Replace with eIllegalOperandSpecification error
-					}
-					break;
-				default:
-					//re-adjust line index to point to token 
-					//immediately after expression
-					lineIndex--;
-					locationCounter += 2;
-					if (!deferredAddressing) {
-						cout << "aRelativeMode" << endl;
-					}
-					else {
-						cout << "aRelativeDeferredMode" << endl;
-					}
-					return 0;
-				}
-				break;
-			case -1:
-				return -1;
-				//TODO
-				// Replace with eIllegalOperandSpecification error
-				break;
-			}
+			return indexOrRelative();
 		}
 		break;
 	case pLeftParen:
@@ -425,29 +376,30 @@ int parser::operand() {
 		}
 		break;	
 	default:
-		lineIndex--;
-		switch (expression()) {
-		case 0:
-			switch (returnNextToken()) {
-			case pLeftParen:
-				switch (registerexpression()) {
-				case 0:
-					switch (returnNextToken()) {
-					case pRightParen:
-						locationCounter += 2;
-						if (!deferredAddressing) {
-							cout << "aIndexMode" << endl;
-						}
-						else {
-							cout << "aIndexDeferredMode" << endl;
-						}
-						return 0;
-						break;
-					default:
-						return -1;
-						//TODO
-						// Replace with eIllegalOperandSpecification error
+		return indexOrRelative();
+	}
+}
+
+int parser::indexOrRelative() {
+	//re-adjust line index to point to first 
+	//token in expression
+	lineIndex--;
+	switch (expression()) {
+	case 0:
+		switch (returnNextToken()) {
+		case pLeftParen:
+			switch (registerexpression()) {
+			case 0:
+				switch (returnNextToken()) {
+				case pRightParen:
+					locationCounter += 2;
+					if (!deferredAddressing) {
+						cout << "aIndexMode" << endl;
 					}
+					else {
+						cout << "aIndexDeferredMode" << endl;
+					}
+					return 0;
 					break;
 				default:
 					return -1;
@@ -456,25 +408,30 @@ int parser::operand() {
 				}
 				break;
 			default:
-				//re-adjust line index to point to token 
-				//immediately after expression
-				lineIndex--;
-				locationCounter += 2;
-				if (!deferredAddressing) {
-					cout << "aRelativeMode" << endl;
-				}
-				else {
-					cout << "aRelativeDeferredMode" << endl;
-				}
-				return 0;
+				return -1;
+				//TODO
+				// Replace with eIllegalOperandSpecification error
 			}
 			break;
-		case -1:
-			return -1;
-			//TODO
-			// Replace with eIllegalOperandSpecification error
-			break;
+		default:
+			//re-adjust line index to point to token 
+			//immediately after expression
+			lineIndex--;
+			locationCounter += 2;
+			if (!deferredAddressing) {
+				cout << "aRelativeMode" << endl;
+			}
+			else {
+				cout << "aRelativeDeferredMode" << endl;
+			}
+			return 0;
 		}
+		break;
+	case -1:
+		return -1;
+		//TODO
+		// Replace with eIllegalOperandSpecification error
+		break;
 	}
 }
 
