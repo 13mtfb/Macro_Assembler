@@ -36,6 +36,7 @@ private:
 	vector<int>line;
 	int compoundIndex;
 	vector<string>compound;
+	bool deferredAddressing;
 
 	//// DATA STRUCTURES ////
 	struct userSymbol {

@@ -20,6 +20,7 @@ void parser::parse(vector<int>l, vector<string>c) {
 	compound = c;
 	lineIndex = -1;
 	compoundIndex = -1;
+	deferredAddressing = false;
 }
 
 int parser::statement() {								// for now, an error is returned as -1
@@ -188,6 +189,7 @@ int parser::opcode() {
 		locationCounter += 2;
 		cout << "aDoubleOperand" << endl;
 		if (!operand()) {	// if successful
+			deferredAddressing = false;
 			switch (returnNextToken()) {
 			case pOperandFieldSeperator:
 				if (!operand()) {
@@ -260,10 +262,25 @@ int parser::opcode() {
 
 int parser::operand() {
 	switch (returnNextToken()) {
+	case pDeferredAddressingIndicator:
+		if (!deferredAddressing) { 
+			deferredAddressing = true;  
+			return operand();
+		}
+		else {
+			// doubley defined deferred addressing indicator
+			return -1;
+		}
+		break;
 	case pSymbol:
 		switch (screener(returnNextCompound())) {
 		case REGISTER:
-			cout << "aRegisterMode" << endl;
+			if (!deferredAddressing) {
+				cout << "aRegisterMode" << endl;
+			}
+			else {
+				cout << "aRegisterDeferredMode" << endl;
+			}
 			return 0;
 			break;
 		default:
@@ -280,7 +297,12 @@ int parser::operand() {
 						switch (returnNextToken()) {
 						case pRightParen:
 							locationCounter += 2;
-							cout << "aIndexMode" << endl;
+							if (!deferredAddressing){
+								cout << "aIndexMode" << endl;
+							}
+							else {
+								cout << "aIndexDeferredMode" << endl;
+							}
 							return 0;
 							break;
 						default:
@@ -300,7 +322,12 @@ int parser::operand() {
 					//immediately after expression
 					lineIndex--;
 					locationCounter += 2;
-					cout << "aRelativeMode" << endl;
+					if (!deferredAddressing) {
+						cout << "aRelativeMode" << endl;
+					}
+					else {
+						cout << "aRelativeDeferredMode" << endl;
+					}
 					return 0;
 				}
 				break;
@@ -312,134 +339,6 @@ int parser::operand() {
 			}
 		}
 		break;
-	case pDeferredAddressingIndicator:
-		switch (returnNextToken()) {
-		case pSymbol:
-			switch (screener(returnNextCompound())) {
-			case REGISTER:
-				cout << "aRegisterDeferredMode" << endl;
-				return 0;
-				break;
-			default:
-				//re-adjust line/compound index to point to first 
-				//token in expression
-				lineIndex--;
-				compoundIndex--;
-				switch (expression()) {
-				case 0:
-					switch (returnNextToken()) {
-					case pLeftParen:
-						switch (registerexpression()) {
-						case 0:
-							switch (returnNextToken()) {
-							case pRightParen:
-								locationCounter += 2;
-								cout << "aIndexDeferredMode" << endl;
-								return 0;
-								break;
-							default:
-								return -1;
-								//TODO
-								// Replace with eIllegalOperandSpecification error
-							}
-							break;
-						default:
-							return -1;
-							//TODO
-							// Replace with eIllegalOperandSpecification error
-						}
-						break;
-					default:
-						//re-adjust line index to point to token 
-						//immediately after expression
-						lineIndex--;
-						locationCounter += 2;
-						cout << "aRelativeDeferredMode" << endl;
-						return 0;
-					}
-					break;
-				case -1:
-					return -1;
-					//TODO
-					// Replace with eIllegalOperandSpecification error
-					break;
-				}
-			}
-			break;
-		case pMinus:
-			switch (returnNextToken()) {
-			case pLeftParen:
-				switch(registerexpression()){
-				case 0:
-					switch (returnNextToken()) {
-					case pRightParen:
-						cout << "aAutoDecrementDeferredMode" << endl;
-						return 0;
-						break;
-					default:
-						//TODO
-						// Replace with eIllegalOperandSpecification error
-						return -1;
-					}
-				break;
-				case -1:
-					//TODO
-					// Replace with eIllegalOperandSpecification error
-					return -1;
-				}
-				break;
-			default:
-				//TODO
-				// Replace with eIllegalOperandSpecification error
-				return -1;
-			}
-			break;
-		case pLeftParen:
-			switch (registerexpression()) {
-			case 0:
-				switch (returnNextToken()) {
-				case pRightParen:
-					switch (returnNextToken()) {
-					case pPlus:
-						cout << "aAutoIncrementDeferredMode" << endl;
-						return 0;
-						break;
-					default:
-						//TODO
-						// Replace with eIllegalOperandSpecification error
-						return -1;
-					}
-					break;
-				default:
-					//TODO
-					// Replace with eIllegalOperandSpecification error
-					return -1;
-				}
-				break;
-			case -1:
-				//TODO
-				// Replace with eIllegalOperandSpecification error
-				return -1;
-			}
-			break;
-		case pImmediateExpressionIndicator:
-			switch (expression()) {
-			case 0:
-				locationCounter += 2;
-				cout << "aAbsoluteMode" << endl;
-				return 0;
-				break;
-			case -1:
-				//TODO
-				// Replace with eIllegalOperandSpecification error
-				return -1;
-			}
-			break;
-		default:
-			//TODO
-			// Replace with eIllegalOperandSpecification error
-			return -1;
-		}
 	case pLeftParen:
 		switch (registerexpression()) {
 		case 0:
@@ -447,7 +346,12 @@ int parser::operand() {
 			case pRightParen:
 				switch (returnNextToken()) {
 				case pPlus:
-					cout << "aAutoIncrementMode" << endl;
+					if (!deferredAddressing) {
+						cout << "aAutoIncrementMode" << endl;
+					}
+					else {
+						cout << "aAutoIncrementDeferredMode" << endl;
+					}
 					return 0;
 					break;
 				default:
@@ -477,7 +381,12 @@ int parser::operand() {
 				case 0:
 					switch (returnNextToken()) {
 					case pRightParen:
-						cout << "aAutoDecrementMode" << endl;
+						if (!deferredAddressing) {
+							cout << "aAutoDecrementMode" << endl;
+						}
+						else {
+							cout << "aAutoDecrementDeferredMode" << endl;
+						}
 						return 0;
 						break;
 					default:
@@ -501,7 +410,12 @@ int parser::operand() {
 		switch (expression()) {
 		case 0:
 			locationCounter += 2;
-			cout << "aImmediateMode" << endl;
+			if (!deferredAddressing) {
+				cout << "aImmediateMode" << endl;
+			}
+			else {
+				cout << "aAbsoluteMode" << endl;
+			}
 			return 0;
 			break;
 		case -1:
@@ -521,7 +435,12 @@ int parser::operand() {
 					switch (returnNextToken()) {
 					case pRightParen:
 						locationCounter += 2;
-						cout << "aIndexMode" << endl;
+						if (!deferredAddressing) {
+							cout << "aIndexMode" << endl;
+						}
+						else {
+							cout << "aIndexDeferredMode" << endl;
+						}
 						return 0;
 						break;
 					default:
@@ -541,7 +460,12 @@ int parser::operand() {
 				//immediately after expression
 				lineIndex--;
 				locationCounter += 2;
-				cout << "aRelativeMode" << endl;
+				if (!deferredAddressing) {
+					cout << "aRelativeMode" << endl;
+				}
+				else {
+					cout << "aRelativeDeferredMode" << endl;
+				}
 				return 0;
 			}
 			break;
