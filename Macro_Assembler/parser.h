@@ -11,16 +11,16 @@ public:
 	parser();							//constructs a parser object
 	int screener(string symbol);
 	void parse(vector<int>line, vector<string>compound);
-	int statement();
+	void statement();
 	void printUST();
 private:
 	//parse methods
-	int opcode();
-	int operand();
-	int indexOrRelative();
-	int registerexpression();
-	int expression();
-	int term();
+	void opcode();
+	void operand();
+	void indexOrRelative();
+	void registerexpression();
+	void expression();
+	void term();
 
 	//private data
 	opCode op;
