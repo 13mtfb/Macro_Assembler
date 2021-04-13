@@ -192,7 +192,6 @@ void parser::opcode() {
 			}
 			break;
 		default:
-			cout << scannerTokensASCII[returnCurrentToken()] << endl;
 			throw (E_MISSING_OPERATOR);
 			}
 		break;
@@ -369,6 +368,7 @@ void parser::expression() {
 	case pOr:
 		// oPushExpressionOperator
 		expression();
+		break;
 	default:
 		//re-adjust line index to point to token 
 		//immediately after expression
