@@ -1,6 +1,4 @@
 //The following module defines the Macro-11 permanent symbol tables (PST)
-
-#include "stdafx.h"
 #include "iostream"
 #include "fstream"
 #include <string>

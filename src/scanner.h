@@ -9,6 +9,7 @@ using namespace std;
 class scanner {
 public:
 	scanner(string filepath);				// create the filestream using the filename passed to the object
+	~scanner();
 	int scan();								// returns next token in filestream
 	vector<string> returnCompoundTokens();	// returns vector of compound tokens
 	void clearCompoundTokens();				// clears vector
