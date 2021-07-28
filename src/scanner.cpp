@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "iostream"
 #include <stdexcept>
 
@@ -17,6 +16,10 @@ scanner::scanner(string filepath) {
 	getline(file, current_line);
 	current_position = -1;
 	EOF_flag = false;
+}
+
+scanner::~scanner(){
+
 }
 
 int scanner::scan() {

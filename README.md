@@ -23,3 +23,19 @@ two pass assembler
 
 
 See [Documents](https://github.com/13mtfb/Macro_Assembler/tree/parser/documents) for information on Assembler Syntax and scanner/parser implementation.
+
+
+
+## Building
+
+ 1. Clone the repository and open with vscode 
+ 2. In vscode:
+   - open `Macro_Assembler.cpp`
+   - Click `Terminal` -> `Run Build Task...`
+   - An .exe will be created in the directory which can be invoked via the command line
+
+## Testing
+
+ 1. `$cmake -S . -B build`
+ 2. `$cmake --build build`
+ 3. `$cd build/ && ctest`
