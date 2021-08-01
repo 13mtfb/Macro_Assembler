@@ -36,6 +36,4 @@ See [Documents](https://github.com/13mtfb/Macro_Assembler/tree/parser/documents)
 
 ## Testing
 
- 1. `$cmake -S . -B build`
- 2. `$cmake --build build`
- 3. `$cd build/ && ctest`
+ 1. `./test_runner.sh`
