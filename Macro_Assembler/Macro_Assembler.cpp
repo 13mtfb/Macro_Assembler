@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 			} while (currentToken != pEOF);
 			Parser.printUST();
 		} catch (exception &ex) {
-			cout << "Error: " << ex.what() << endl;
+			cout << "error: " << ex.what() << endl;
 		}
 	}
 
