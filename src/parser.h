@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include "PST.h"
 
 using namespace std;
@@ -43,7 +44,6 @@ private:
 	//// DATA STRUCTURES ////
 	struct userSymbol
 	{
-		string name;
 		int value;
 		bool global;
 		enum
@@ -55,10 +55,10 @@ private:
 	};
 
 	//// MECHANISMS ////
-	void oPushLabel(string label, bool global);
-	void oPushAssignment(string equate, int value, bool global);
+	bool oPushLabel(string label, bool global);
+	bool oPushAssignment(string equate, int value, bool global);
 
 	//// ASSEMBLER VARIABLES ////
 	int locationCounter; // note: ASSUME single PSECT for now
-	vector<userSymbol> UST;
+	unordered_map<string, userSymbol> UST;
 };
