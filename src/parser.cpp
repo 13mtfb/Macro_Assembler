@@ -30,14 +30,27 @@ void parser::statement()
 	switch (returnNextToken())
 	{
 	case pLabel:
-		oPushLabel(returnNextCompound(), false);
-		cout << "parsed pLabel" << endl;
-		statement();
+		// attempt to insert label into the UST
+		if (oPushLabel(returnNextCompound(), false))
+		{
+			cout << "parsed pLabel" << endl;
+			statement();
+		}
+		else
+		{
+			throw(E_MULTIPLE_DEFINED_SYMBOL);
+		}
 		break;
 	case pGlobalLabel:
-		oPushLabel(returnNextCompound(), true);
-		cout << "parsed pGlobalLabel" << endl;
-		statement();
+		if (oPushLabel(returnNextCompound(), true))
+		{
+			cout << "parsed pGlobalLabel" << endl;
+			statement();
+		}
+		else
+		{
+			throw(E_MULTIPLE_DEFINED_SYMBOL);
+		}
 		break;
 	case pSymbol:
 		switch (screener(returnNextCompound()))
@@ -134,9 +147,10 @@ int parser::screener(string symbol)
 			screenerReturn = ASSEMBLERDIRECTIVE;
 		}
 	}
-	for (int i = 0; i < UST.size(); i++)
+	for (auto i : UST)
 	{
-		if (symbol == UST[i].name)
+		// i.second is the userSymbol value from the map
+		if (symbol == i.first)
 		{
 			//TODO:
 			// create sym variable in class and set to type (or value?)
@@ -154,9 +168,9 @@ void parser::printUST()
 	cout << "NAME\tVALUE\tGLOBAL\tTYPE" << endl;
 	string global, type;
 
-	for (int i = 0; i < UST.size(); i++)
+	for (auto i : UST)
 	{
-		if (UST[i].global)
+		if (i.second.global)
 		{
 			global = "Y";
 		}
@@ -164,7 +178,7 @@ void parser::printUST()
 		{
 			global = "N";
 		}
-		if (UST[i].ATTRIBUTE == userSymbol::LABEL)
+		if (i.second.ATTRIBUTE == userSymbol::LABEL)
 		{
 			type = "LABEL";
 		}
@@ -172,8 +186,8 @@ void parser::printUST()
 		{
 			type = "SYMBOL";
 		}
-		cout << UST[i].name << "\t";
-		cout << std::oct << UST[i].value << "\t";
+		cout << i.first << "\t";
+		cout << std::oct << i.second.value << "\t";
 		cout << global << "\t";
 		cout << type << endl;
 	}
@@ -549,25 +563,25 @@ string parser::returnNextCompound()
 }
 
 //// MECHANISMS ////
-
-void parser::oPushLabel(string label, bool global)
+//oPushLabel inserts a label into the UST hashmap
+// returns true if successful, or false if label already exists
+bool parser::oPushLabel(string label, bool global)
 {
 	userSymbol add = {
-		label,
 		locationCounter,
 		global,
 		userSymbol::LABEL};
-
-	UST.push_back(add);
+	//second is the bool which indicates if the new element was inserted
+	return UST.insert({label, add}).second;
 }
-
-void parser::oPushAssignment(string equate, int value, bool global)
+//oPushAssignment inserts an equate into the UST hashmap
+// returns true if successful, or false if the equate already exists
+bool parser::oPushAssignment(string equate, int value, bool global)
 {
 	userSymbol add = {
-		equate,
 		value,
 		global,
 		userSymbol::EQUATE};
-
-	UST.push_back(add);
+	//second is the bool which indicates if the new element was inserted
+	return UST.insert({equate, add}).second;
 }
