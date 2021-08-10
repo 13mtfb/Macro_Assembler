@@ -5,34 +5,35 @@
 
 using namespace std;
 
-enum scannerTokens {
-	pLabel,							// (LABEL: -without the ":")
+enum scannerTokens
+{
+	pLabel, // (LABEL: -without the ":")
 	pGlobalLabel,
-	pSymbol,						// ex. "abc"
-	pNumericLiteral,				// (ex. "41")
-	pEqual,							// (ex. "=")
-	pDoubleEqual,					// (ex. "==")
-	pRegisterTerm,					// (ex. "%")
-	pImmediateExpressionIndicator,	// ("#")
-	pDeferredAddressingIndicator,	// ("@")
-	pLeftParen,						// ("(")
-	pRightParen,					// (")")
-	pPeriod,						// (".")
-	pOperandFieldSeperator,			// (",")
-	pComment,						// (";")
-	pLeftBracket,					// ("<")
-	pRightBracket,					// (">")
-	pPlus,							// ("+")
-	pMinus,							// ("-")
-	pMultiply,						// ("*")
-	pDivide,						// ("/")
-	pAnd,							// ("&")
-	pOr,							// ("!")
-	pDoubleASCII,					// (""")
-	pSingleASCII,					// ("'")
-	pUnary,							// ("^")
-	pBackslash,						// ("\")
-	pNewLine,						// ("\LF")
+	pSymbol,					   // ex. "abc"
+	pNumericLiteral,			   // (ex. "41")
+	pEqual,						   // (ex. "=")
+	pDoubleEqual,				   // (ex. "==")
+	pRegisterTerm,				   // (ex. "%")
+	pImmediateExpressionIndicator, // ("#")
+	pDeferredAddressingIndicator,  // ("@")
+	pLeftParen,					   // ("(")
+	pRightParen,				   // (")")
+	pPeriod,					   // (".")
+	pOperandFieldSeperator,		   // (",")
+	pComment,					   // (";")
+	pLeftBracket,				   // ("<")
+	pRightBracket,				   // (">")
+	pPlus,						   // ("+")
+	pMinus,						   // ("-")
+	pMultiply,					   // ("*")
+	pDivide,					   // ("/")
+	pAnd,						   // ("&")
+	pOr,						   // ("!")
+	pDoubleASCII,				   // (""")
+	pSingleASCII,				   // ("'")
+	pUnary,						   // ("^")
+	pBackslash,					   // ("\")
+	pNewLine,					   // ("\LF")
 	pEOF,
 	eIllegalChar
 };
@@ -66,11 +67,10 @@ const vector<string> scannerTokensASCII = {
 	"pBackslash",
 	"pNewLine",
 	"pEOF",
-	"eIllegalChar"
-};
+	"eIllegalChar"};
 
-
-enum screenerTokens {
+enum screenerTokens
+{
 	OPCODE,
 	ASSEMBLERDIRECTIVE,
 	MACROCALL,
@@ -85,23 +85,23 @@ const vector<string> screenerTokensASCII = {
 	"macroCall",
 	"symbol",
 	"register",
-	"unknown"
-};
+	"unknown"};
 
-enum parserTokens {
+enum parserTokens
+{
 	//Addressing modes
-	aRegisterMode,							// (R)
-	aRegisterDeferredMode,					// (@R or (ER))
-	aAutoIncrementMode,						// ((ER + ))
-	aAutoIncrementDeferredMode,				// (@(ER) + )
-	aAutoDecrementMode,						// (-(ER))
-	aAutoDecrementDeferredMode,				// (@-(ER))
-	aIndexMode,								// (E(ER))
-	aIndexDeferredMode,						// (@E(ER)
-	aImmediateMode,							// (#E)
-	aAbsoluteMode,							// (@#E)
-	aRelativeMode,							// (E)
-	aRelativeDeferredMode,					// (@E)
+	aRegisterMode,				// (R)
+	aRegisterDeferredMode,		// (@R or (ER))
+	aAutoIncrementMode,			// ((ER + ))
+	aAutoIncrementDeferredMode, // (@(ER) + )
+	aAutoDecrementMode,			// (-(ER))
+	aAutoDecrementDeferredMode, // (@-(ER))
+	aIndexMode,					// (E(ER))
+	aIndexDeferredMode,			// (@E(ER)
+	aImmediateMode,				// (#E)
+	aAbsoluteMode,				// (@#E)
+	aRelativeMode,				// (E)
+	aRelativeDeferredMode,		// (@E)
 	//instruction emit
 	aSingleOperand,
 	aDoubleOperand,
@@ -139,10 +139,10 @@ const vector<string> parserTokens = {
 	"aTrapInterrupt",
 	"aConditionCode",
 	"aMiscellaneous",
-	"aMiscellaneousSPL"
-};
+	"aMiscellaneousSPL"};
 
-enum errorType {
+enum errorType
+{
 	NO_ERROR,
 	E_ILLEGAL_STATEMENT,
 	E_MISSING_OPERATOR,
@@ -159,5 +159,4 @@ const vector<string> errorTokensASCII = {
 	"E_UNDEFINED_OPCODE",
 	"E_ILLEGAL_OPERAND_SPECIFICATION",
 	"E_ILLEGAL_REGISTER_EXPRESSION",
-	"E_ILLEGAL_TERM"
-};
+	"E_ILLEGAL_TERM"};

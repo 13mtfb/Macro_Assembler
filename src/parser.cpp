@@ -9,12 +9,14 @@
 using namespace std;
 
 //// PUBLIC METHODS ////
-parser::parser(){
+parser::parser()
+{
 	locationCounter = 00;
 	UST.clear();
 }
 
-void parser::parse(vector<int>l, vector<string>c) {
+void parser::parse(vector<int> l, vector<string> c)
+{
 	line = l;
 	compound = c;
 	lineIndex = -1;
@@ -23,8 +25,10 @@ void parser::parse(vector<int>l, vector<string>c) {
 	statement();
 }
 
-void parser::statement() {								// for now, an error is returned as -1
-	switch (returnNextToken()) {
+void parser::statement()
+{ // for now, an error is returned as -1
+	switch (returnNextToken())
+	{
 	case pLabel:
 		oPushLabel(returnNextCompound(), false);
 		cout << "parsed pLabel" << endl;
@@ -36,7 +40,8 @@ void parser::statement() {								// for now, an error is returned as -1
 		statement();
 		break;
 	case pSymbol:
-		switch (screener(returnNextCompound())) {
+		switch (screener(returnNextCompound()))
+		{
 		case OPCODE:
 			// screener loads variable 'opcode' with operator from PST
 			cout << "parsed opcode" << endl;
@@ -49,7 +54,8 @@ void parser::statement() {								// for now, an error is returned as -1
 			// TODO
 			break;
 		case UNKNOWN:
-			switch (returnNextToken()) {
+			switch (returnNextToken())
+			{
 			case pEqual:
 				//TODO:
 				//oPushAssignment(returnCurrentCompound(), expression(), false);
@@ -59,17 +65,19 @@ void parser::statement() {								// for now, an error is returned as -1
 				//oPushAssignment(returnCurrentCompound(), expression(), true);
 				break;
 			default:
-				throw (E_ILLEGAL_STATEMENT);
+				throw(E_ILLEGAL_STATEMENT);
 			}
 		}
 		break;
 	case pPeriod:
-		if (returnNextToken() == pEqual) {
+		if (returnNextToken() == pEqual)
+		{
 			//TODO
 			//locationCounter = expression();
 		}
-		else {
-			throw (E_ILLEGAL_STATEMENT);
+		else
+		{
+			throw(E_ILLEGAL_STATEMENT);
 		}
 		break;
 	case pNewLine:
@@ -77,11 +85,12 @@ void parser::statement() {								// for now, an error is returned as -1
 		//ignore - no processing needed
 		break;
 	default:
-		throw (E_ILLEGAL_STATEMENT);
+		throw(E_ILLEGAL_STATEMENT);
 	}
 }
 
-int parser::screener(string symbol) {
+int parser::screener(string symbol)
+{
 	// return enum which matches type of symbol
 	int screenerReturn = UNKNOWN;
 
@@ -97,32 +106,38 @@ int parser::screener(string symbol) {
 		"R4",
 		"R5",
 		"SP",
-		"PC"
-	};
+		"PC"};
 
-	for (int i = 0; i < 8; i++) {
-		if (symbol == registerDefinitions[i]) {
+	for (int i = 0; i < 8; i++)
+	{
+		if (symbol == registerDefinitions[i])
+		{
 			reg = i;
 			screenerReturn = REGISTER;
 		}
 	}
 
-
-	for (int i = 0; i < instructionLength; i++) {
-		if (symbol == instruction[i].mnemonic) {			// if symbol matches opcode, then return opcode!
-			op = instruction[i];							//set opcode in parser object
+	for (int i = 0; i < instructionLength; i++)
+	{
+		if (symbol == instruction[i].mnemonic)
+		{						 // if symbol matches opcode, then return opcode!
+			op = instruction[i]; //set opcode in parser object
 			screenerReturn = OPCODE;
 		}
 	}
-	for (int i = 0; i < directiveLength; i++) {				// if symbol matches assembler directive, then return that!
-		if (symbol == directive[i].directive) {
+	for (int i = 0; i < directiveLength; i++)
+	{ // if symbol matches assembler directive, then return that!
+		if (symbol == directive[i].directive)
+		{
 			//TODO:
 			// create asm variable in class and set to directive
 			screenerReturn = ASSEMBLERDIRECTIVE;
 		}
 	}
-	for (int i = 0; i < UST.size(); i++) {
-		if (symbol == UST[i].name) {
+	for (int i = 0; i < UST.size(); i++)
+	{
+		if (symbol == UST[i].name)
+		{
 			//TODO:
 			// create sym variable in class and set to type (or value?)
 			screenerReturn = SYMBOL;
@@ -134,21 +149,27 @@ int parser::screener(string symbol) {
 	return screenerReturn;
 }
 
-void parser::printUST() {
+void parser::printUST()
+{
 	cout << "NAME\tVALUE\tGLOBAL\tTYPE" << endl;
 	string global, type;
 
-	for (int i = 0; i < UST.size(); i++) {
-		if (UST[i].global) {
+	for (int i = 0; i < UST.size(); i++)
+	{
+		if (UST[i].global)
+		{
 			global = "Y";
 		}
-		else {
+		else
+		{
 			global = "N";
 		}
-		if (UST[i].ATTRIBUTE == userSymbol::LABEL) {
+		if (UST[i].ATTRIBUTE == userSymbol::LABEL)
+		{
 			type = "LABEL";
 		}
-		else {
+		else
+		{
 			type = "SYMBOL";
 		}
 		cout << UST[i].name << "\t";
@@ -156,43 +177,46 @@ void parser::printUST() {
 		cout << global << "\t";
 		cout << type << endl;
 	}
-
 }
 
 //// PRIVATE METHODS ////
 
-
-void parser::opcode() {
-	switch (op.operatortype) {
+void parser::opcode()
+{
+	switch (op.operatortype)
+	{
 	case SINGLE_OPERAND:
 		locationCounter += 2;
 		cout << "aSingleOperand" << endl;
 		operand();
-		switch (returnNextToken()) {
+		switch (returnNextToken())
+		{
 		case pNewLine:
 			break;
 		default:
 			throw(E_ILLEGAL_STATEMENT);
-			}
+		}
 		break;
 	case DOUBLE_OPERAND_1:
 		locationCounter += 2;
 		cout << "aDoubleOperand" << endl;
 		operand();
 		deferredAddressing = false;
-		switch (returnNextToken()) {
+		switch (returnNextToken())
+		{
 		case pOperandFieldSeperator:
 			operand();
-			switch (returnNextToken()) {
+			switch (returnNextToken())
+			{
 			case pNewLine:
 				break;
 			default:
-				throw (E_ILLEGAL_STATEMENT);
+				throw(E_ILLEGAL_STATEMENT);
 			}
 			break;
 		default:
-			throw (E_MISSING_OPERATOR);
-			}
+			throw(E_MISSING_OPERATOR);
+		}
 		break;
 	case DOUBLE_OPERAND_2:
 		//TODO
@@ -225,36 +249,41 @@ void parser::opcode() {
 		//TODO
 		break;
 	default:
-		throw (E_UNDEFINED_OPCODE);
+		throw(E_UNDEFINED_OPCODE);
 	}
-
-
 }
 
-void parser::operand() {
-	switch (returnNextToken()) {
+void parser::operand()
+{
+	switch (returnNextToken())
+	{
 	case pDeferredAddressingIndicator:
-		if (!deferredAddressing) { 
-			deferredAddressing = true;  
+		if (!deferredAddressing)
+		{
+			deferredAddressing = true;
 			operand();
 		}
-		else {
+		else
+		{
 			// doubley defined deferred addressing indicator
 			throw(E_ILLEGAL_OPERAND_SPECIFICATION);
 		}
 		break;
 	case pSymbol:
-		switch (screener(returnNextCompound())) {
+		switch (screener(returnNextCompound()))
+		{
 		case REGISTER:
-			if (!deferredAddressing) {
+			if (!deferredAddressing)
+			{
 				cout << "aRegisterMode" << endl;
 			}
-			else {
+			else
+			{
 				cout << "aRegisterDeferredMode" << endl;
 			}
 			break;
 		default:
-			//re-adjust compound index to point to first 
+			//re-adjust compound index to point to first
 			//token in expression
 			compoundIndex--;
 			indexOrRelative();
@@ -262,19 +291,23 @@ void parser::operand() {
 		break;
 	case pLeftParen:
 		registerexpression();
-		switch (returnNextToken()) {
+		switch (returnNextToken())
+		{
 		case pRightParen:
-			switch (returnNextToken()) {
+			switch (returnNextToken())
+			{
 			case pPlus:
-				if (!deferredAddressing) {
+				if (!deferredAddressing)
+				{
 					cout << "aAutoIncrementMode" << endl;
 				}
-				else {
+				else
+				{
 					cout << "aAutoIncrementDeferredMode" << endl;
 				}
 				break;
 			default:
-				//re-adjust line index to point to token 
+				//re-adjust line index to point to token
 				//immediately after expression
 				lineIndex--;
 				cout << "aRegisterDeferredMode" << endl;
@@ -285,56 +318,67 @@ void parser::operand() {
 		}
 		break;
 	case pMinus:
-		switch (returnNextToken()) {
-			case pLeftParen:
-				registerexpression();
-				switch (returnNextToken()) {
-				case pRightParen:
-					if (!deferredAddressing) {
-						cout << "aAutoDecrementMode" << endl;
-					}
-					else {
-						cout << "aAutoDecrementDeferredMode" << endl;
-					}
-					break;
-				default:
-					throw(E_ILLEGAL_OPERAND_SPECIFICATION);
+		switch (returnNextToken())
+		{
+		case pLeftParen:
+			registerexpression();
+			switch (returnNextToken())
+			{
+			case pRightParen:
+				if (!deferredAddressing)
+				{
+					cout << "aAutoDecrementMode" << endl;
+				}
+				else
+				{
+					cout << "aAutoDecrementDeferredMode" << endl;
 				}
 				break;
 			default:
 				throw(E_ILLEGAL_OPERAND_SPECIFICATION);
 			}
 			break;
+		default:
+			throw(E_ILLEGAL_OPERAND_SPECIFICATION);
+		}
+		break;
 	case pImmediateExpressionIndicator:
 		expression();
 		locationCounter += 2;
-		if (!deferredAddressing) {
+		if (!deferredAddressing)
+		{
 			cout << "aImmediateMode" << endl;
 		}
-		else {
+		else
+		{
 			cout << "aAbsoluteMode" << endl;
 		}
-		break;	
+		break;
 	default:
 		indexOrRelative();
 	}
 }
 
-void parser::indexOrRelative() {
-	//re-adjust line index to point to first 
+void parser::indexOrRelative()
+{
+	//re-adjust line index to point to first
 	//token in expression
 	lineIndex--;
 	expression();
-	switch (returnNextToken()) {
+	switch (returnNextToken())
+	{
 	case pLeftParen:
 		registerexpression();
-		switch (returnNextToken()) {
+		switch (returnNextToken())
+		{
 		case pRightParen:
 			locationCounter += 2;
-			if (!deferredAddressing) {
+			if (!deferredAddressing)
+			{
 				cout << "aIndexMode" << endl;
 			}
-			else {
+			else
+			{
 				cout << "aIndexDeferredMode" << endl;
 			}
 			break;
@@ -343,22 +387,26 @@ void parser::indexOrRelative() {
 		}
 		break;
 	default:
-		//re-adjust line index to point to token 
+		//re-adjust line index to point to token
 		//immediately after expression
 		lineIndex--;
 		locationCounter += 2;
-		if (!deferredAddressing) {
+		if (!deferredAddressing)
+		{
 			cout << "aRelativeMode" << endl;
 		}
-		else {
+		else
+		{
 			cout << "aRelativeDeferredMode" << endl;
 		}
 	}
 }
 
-void parser::expression() {
+void parser::expression()
+{
 	term();
-	switch (returnNextToken()) {
+	switch (returnNextToken())
+	{
 	case pPlus:
 	case pMinus:
 	case pMultiply:
@@ -369,16 +417,19 @@ void parser::expression() {
 		expression();
 		break;
 	default:
-		//re-adjust line index to point to token 
+		//re-adjust line index to point to token
 		//immediately after expression
 		lineIndex--;
 	}
 }
 
-void parser::registerexpression() {
-	switch (returnNextToken()) {
+void parser::registerexpression()
+{
+	switch (returnNextToken())
+	{
 	case pSymbol:
-		switch (screener(returnNextCompound())) {
+		switch (screener(returnNextCompound()))
+		{
 		case REGISTER:
 			break;
 		default:
@@ -392,8 +443,10 @@ void parser::registerexpression() {
 	}
 }
 
-void parser::term() {
-	switch (returnNextToken()) {
+void parser::term()
+{
+	switch (returnNextToken())
+	{
 	case pPlus:
 	case pMinus:
 	case pUnary:
@@ -402,7 +455,8 @@ void parser::term() {
 		break;
 	case pLeftBracket:
 		expression();
-		switch (returnNextToken()) {
+		switch (returnNextToken())
+		{
 		case pRightBracket:
 			//oEvaluateTerm
 			break;
@@ -418,7 +472,8 @@ void parser::term() {
 		//oEvaluateTerm
 		break;
 	case pSymbol:
-		switch (screener(returnNextCompound())) {
+		switch (screener(returnNextCompound()))
+		{
 		case SYMBOL:
 		case OPCODE:
 		case UNKNOWN:
@@ -429,7 +484,8 @@ void parser::term() {
 		}
 		break;
 	case pSingleASCII:
-		switch (returnNextToken()) {
+		switch (returnNextToken())
+		{
 		case pSymbol:
 			//check if single ASCII character
 			//oEvaluateTerm
@@ -439,7 +495,8 @@ void parser::term() {
 		}
 		break;
 	case pDoubleASCII:
-		switch (returnNextToken()) {
+		switch (returnNextToken())
+		{
 		case pSymbol:
 			//check if double ASCII character
 			//oEvaluateTerm
@@ -451,60 +508,66 @@ void parser::term() {
 	default:
 		throw(E_ILLEGAL_TERM);
 	}
-
 }
 
 //// UTILITY METHODS ////
 
-int parser::returnCurrentToken() {
-	if (lineIndex < line.size()) {
+int parser::returnCurrentToken()
+{
+	if (lineIndex < line.size())
+	{
 		return line[lineIndex];
 	}
-	else {
+	else
+	{
 		return -1;
 	}
 }
 
-int parser::returnNextToken() {
+int parser::returnNextToken()
+{
 	lineIndex++;
 	return returnCurrentToken();
 }
 
-string parser::returnCurrentCompound() {
-	if (compoundIndex < compound.size()) {
+string parser::returnCurrentCompound()
+{
+	if (compoundIndex < compound.size())
+	{
 		return compound[compoundIndex];
 	}
-	else {
+	else
+	{
 		return "";
 	}
 }
 
-string parser::returnNextCompound() {
+string parser::returnNextCompound()
+{
 	compoundIndex++;
 	return returnCurrentCompound();
 }
 
 //// MECHANISMS ////
 
-void parser::oPushLabel(string label, bool global) {
+void parser::oPushLabel(string label, bool global)
+{
 	userSymbol add = {
 		label,
 		locationCounter,
 		global,
-		userSymbol::LABEL
-	};
+		userSymbol::LABEL};
 
 	UST.push_back(add);
-
 }
 
-void parser::oPushAssignment(string equate, int value, bool global) {
+void parser::oPushAssignment(string equate, int value, bool global)
+{
 	userSymbol add = {
 		equate,
 		value,
 		global,
-		userSymbol::EQUATE
-	};
+		userSymbol::EQUATE};
 
 	UST.push_back(add);
 }

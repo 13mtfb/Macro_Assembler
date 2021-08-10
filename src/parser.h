@@ -5,14 +5,15 @@
 
 using namespace std;
 
-
-class parser {
+class parser
+{
 public:
-	parser();							//constructs a parser object
+	parser(); //constructs a parser object
 	int screener(string symbol);
-	void parse(vector<int>line, vector<string>compound);
+	void parse(vector<int> line, vector<string> compound);
 	void statement();
 	void printUST();
+
 private:
 	//parse methods
 	void opcode();
@@ -34,17 +35,22 @@ private:
 
 	//// UTILITY DATA ////
 	int lineIndex;
-	vector<int>line;
+	vector<int> line;
 	int compoundIndex;
-	vector<string>compound;
+	vector<string> compound;
 	bool deferredAddressing;
 
 	//// DATA STRUCTURES ////
-	struct userSymbol {
+	struct userSymbol
+	{
 		string name;
 		int value;
 		bool global;
-		enum { LABEL, EQUATE }ATTRIBUTE;
+		enum
+		{
+			LABEL,
+			EQUATE
+		} ATTRIBUTE;
 		// PSECT
 	};
 
@@ -52,8 +58,7 @@ private:
 	void oPushLabel(string label, bool global);
 	void oPushAssignment(string equate, int value, bool global);
 
-
 	//// ASSEMBLER VARIABLES ////
-	int locationCounter;				// note: ASSUME single PSECT for now
-	vector<userSymbol>UST;
+	int locationCounter; // note: ASSUME single PSECT for now
+	vector<userSymbol> UST;
 };
