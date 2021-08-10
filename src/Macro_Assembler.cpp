@@ -8,6 +8,7 @@
 
 
 // general includes
+#include "stdafx.h"
 #include "iostream"
 #include "fstream"
 #include <stdexcept>
@@ -19,12 +20,6 @@
 
 using namespace std;
 
-
-//global variables
-// assembler variables
-int current_location_counter = 0;	//current location counter
-char *current_psect;				//current program section
-int line_character_counter = 0;		//counter to ensure source line doesn't exceed 132 characters
 
 
 //Macro_Assembler meta variables
@@ -50,14 +45,23 @@ int main(int argc, char* argv[])
 		int currentToken;
 		try {
 			scanner Scanner(filename);
+			parser Parser;
 			do {															//scan each token to end of file
-				parser Parser;
 				currentToken = Scanner.scan();
 				lineTokens.push_back(currentToken);							//add token to line
 				if (currentToken == pNewLine || currentToken == pEOF) {		//if reached end of line, pass vector to parse
 					//call parse object with lineTokens as input
 					compoundTokens = Scanner.returnCompoundTokens();
 					Scanner.clearCompoundTokens();
+
+					try {
+						Parser.parse(lineTokens, compoundTokens);
+					}
+					catch (errorType e) {
+						cout << "Error: " << errorTokensASCII[e] << endl;
+					}
+					
+
 					if (parse_debug){										// if parse_debug is true, output to file
 						int j = 0;
 						for (unsigned int i = 0; i < lineTokens.size(); i++) {
@@ -79,8 +83,9 @@ int main(int argc, char* argv[])
 					lineTokens.clear();
 				}
 			} while (currentToken != pEOF);
+			Parser.printUST();
 		} catch (exception &ex) {
-			cout << "Error: " << ex.what() << endl;
+			cout << "error: " << ex.what() << endl;
 		}
 	}
 

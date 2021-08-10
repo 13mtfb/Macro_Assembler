@@ -5,6 +5,7 @@ Two pass assembler
 	-Locate and read all required macros from libraries
 	-Build symbol tables and program section tables
 	-Rudimentary assembling of each source statement
+		-Do not evaluate expressions. As soon as operand addressing mode is known, can exit.
 
 	Pass 2
 	-Generate machine code instructions

@@ -74,12 +74,90 @@ enum screenerTokens {
 	OPCODE,
 	ASSEMBLERDIRECTIVE,
 	MACROCALL,
-	SYMBOL
+	SYMBOL,
+	REGISTER,
+	UNKNOWN
 };
 
 const vector<string> screenerTokensASCII = {
 	"opcode",
 	"assemblerDirective",
 	"macroCall",
-	"symbol"
+	"symbol",
+	"register",
+	"unknown"
+};
+
+enum parserTokens {
+	//Addressing modes
+	aRegisterMode,							// (R)
+	aRegisterDeferredMode,					// (@R or (ER))
+	aAutoIncrementMode,						// ((ER + ))
+	aAutoIncrementDeferredMode,				// (@(ER) + )
+	aAutoDecrementMode,						// (-(ER))
+	aAutoDecrementDeferredMode,				// (@-(ER))
+	aIndexMode,								// (E(ER))
+	aIndexDeferredMode,						// (@E(ER)
+	aImmediateMode,							// (#E)
+	aAbsoluteMode,							// (@#E)
+	aRelativeMode,							// (E)
+	aRelativeDeferredMode,					// (@E)
+	//instruction emit
+	aSingleOperand,
+	aDoubleOperand,
+	aBranch,
+	aJumpSubroutineRTS,
+	aJumpSubroutineMARK,
+	aJumpSubroutineSOB,
+	aTrapInterrupt,
+	aConditionCode,
+	aMiscellaneous,
+	aMiscellaneousSPL
+};
+
+const vector<string> parserTokens = {
+	//Addressing modes
+	"aRegisterMode",
+	"aRegisterDeferredMode",
+	"aAutoIncrementMode",
+	"aAutoIncrementDeferredMode",
+	"aAutoDecrementMode",
+	"aAutoDecrementDeferredMode",
+	"aIndexMode",
+	"aIndexDeferredMode",
+	"aImmediateMode",
+	"aAbsoluteMode",
+	"aRelativeMode",
+	"aRelativeDeferredMode",
+	//instruction emit
+	"aSingleOperand",
+	"aDoubleOperand",
+	"aBranch",
+	"aJumpSubroutineRTS",
+	"aJumpSubroutineMARK",
+	"aJumpSubroutineSOB",
+	"aTrapInterrupt",
+	"aConditionCode",
+	"aMiscellaneous",
+	"aMiscellaneousSPL"
+};
+
+enum errorType {
+	NO_ERROR,
+	E_ILLEGAL_STATEMENT,
+	E_MISSING_OPERATOR,
+	E_UNDEFINED_OPCODE,
+	E_ILLEGAL_OPERAND_SPECIFICATION,
+	E_ILLEGAL_REGISTER_EXPRESSION,
+	E_ILLEGAL_TERM
+};
+
+const vector<string> errorTokensASCII = {
+	"NO_ERROR",
+	"E_ILLEGAL_STATEMENT",
+	"E_MISSING_OPERATOR",
+	"E_UNDEFINED_OPCODE",
+	"E_ILLEGAL_OPERAND_SPECIFICATION",
+	"E_ILLEGAL_REGISTER_EXPRESSION",
+	"E_ILLEGAL_TERM"
 };
