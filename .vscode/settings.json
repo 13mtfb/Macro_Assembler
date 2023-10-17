@@ -3,4 +3,5 @@
         "iosfwd": "cpp"
     },
     "editor.formatOnSave": true,
+    "cmake.configureOnOpen": true,
 }
