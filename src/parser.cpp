@@ -78,7 +78,7 @@ void parser::statement()
 				// oPushAssignment(returnCurrentCompound(), expression(), true);
 				break;
 			default:
-				throw(E_ILLEGAL_STATEMENT);
+				throw(E_ILLEGAL_STATEMENT_UNKNOWN_SYMBOL);
 			}
 		}
 		break;
@@ -90,7 +90,7 @@ void parser::statement()
 		}
 		else
 		{
-			throw(E_ILLEGAL_STATEMENT);
+			throw(E_ILLEGAL_STATEMENT_UNKNOWN_PERIOD);
 		}
 		break;
 	case pNewLine:
@@ -227,7 +227,7 @@ void parser::opcode()
 			case pNewLine:
 				break;
 			default:
-				throw(E_ILLEGAL_STATEMENT);
+				throw(E_ILLEGAL_STATEMENT_INVALID_OPERAND);
 			}
 			break;
 		default:

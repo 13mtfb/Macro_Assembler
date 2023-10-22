@@ -190,6 +190,11 @@ void scanner::clearCompoundTokens()
 	compoundTokens.clear();
 }
 
+void scanner::printCurrentLine()
+{
+	cout << current_line;
+}
+
 //// PRIVATE METHODS ////
 int scanner::LocationOrSymbol()
 {

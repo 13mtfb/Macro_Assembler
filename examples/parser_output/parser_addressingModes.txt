@@ -1,0 +1,73 @@
+parsed pGlobalLabel
+parsed opcode
+aDoubleOperand
+aRegisterMode
+aRegisterMode
+parsed pGlobalLabel
+parsed opcode
+aDoubleOperand
+aRegisterDeferredMode
+aRegisterDeferredMode
+parsed pLabel
+parsed opcode
+aDoubleOperand
+aAutoIncrementMode
+aAutoIncrementMode
+parsed pLabel
+parsed opcode
+aDoubleOperand
+aAutoIncrementDeferredMode
+aAutoIncrementDeferredMode
+parsed pGlobalLabel
+parsed opcode
+aDoubleOperand
+aAutoDecrementMode
+aAutoDecrementMode
+parsed pLabel
+parsed opcode
+aDoubleOperand
+aAutoDecrementDeferredMode
+aAutoDecrementDeferredMode
+parsed pLabel
+parsed opcode
+aDoubleOperand
+aIndexMode
+aIndexMode
+parsed pGlobalLabel
+parsed opcode
+aDoubleOperand
+aIndexDeferredMode
+aIndexDeferredMode
+parsed pGlobalLabel
+parsed opcode
+aDoubleOperand
+aImmediateMode
+aImmediateMode
+parsed pLabel
+parsed opcode
+aDoubleOperand
+aAbsoluteMode
+aAbsoluteMode
+parsed pLabel
+parsed opcode
+aDoubleOperand
+aRelativeMode
+aRelativeMode
+parsed pLabel
+parsed opcode
+aDoubleOperand
+aRelativeDeferredMode
+aRelativeDeferredMode
+NAME    VALUE   GLOBAL  TYPE
+HELL8   22      Y       LABEL
+HELL4   6       N       LABEL
+HELL7   14      N       LABEL
+HELL6   12      N       LABEL
+HELL5   10      Y       LABEL
+HEL11   44      N       LABEL
+HELL3   4       N       LABEL
+HEL10   36      N       LABEL
+HELL9   30      Y       LABEL
+HELL2   2       Y       LABEL
+HEL12   52      N       LABEL
+HELLO   0       Y       LABEL

@@ -3,9 +3,9 @@
 HELLO:: MOV     #MSG,R1  ;STARTING ADDRESS OF STRING
 1$:     MOVB    (R1)+,R0 ;FETCH NEXT CHARACTER
         BEQ     DONE     ;IF ZERO, EXIT LOOP
-        .TTYOUT          ;OTHERWISE PRINT IT
+        .TTYOUT          ;OTHERWISE PRINT IT (expect error to be thrown until macros implemented)
         BR      1$       ;REPEAT LOOP
-DONE:   .EXIT
+DONE:   .EXIT ;expect error to be thrown until macros implemented
 
 MSG:    .ASCIZ /Hello, world!/
         .END    HELLO

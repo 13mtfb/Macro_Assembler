@@ -18,7 +18,7 @@
 
 using namespace std;
 
-//Macro_Assembler meta variables
+// Macro_Assembler meta variables
 bool parse_debug = false;
 
 int main(int argc, char *argv[])
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	vector<int> lineTokens;
 	vector<string> compoundTokens;
 	if (argc < 2)
-	{ //we expect at least 2 arguments: program name and source filename
+	{ // we expect at least 2 arguments: program name and source filename
 		std::cerr << "Usage: " << argv[0] << " SOURCE_FILENAME" << endl;
 	}
 	else
@@ -47,12 +47,12 @@ int main(int argc, char *argv[])
 			scanner Scanner(filename);
 			parser Parser;
 			do
-			{ //scan each token to end of file
+			{ // scan each token to end of file
 				currentToken = Scanner.scan();
-				lineTokens.push_back(currentToken); //add token to line
+				lineTokens.push_back(currentToken); // add token to line
 				if (currentToken == pNewLine || currentToken == pEOF)
-				{ //if reached end of line, pass vector to parse
-					//call parse object with lineTokens as input
+				{ // if reached end of line, pass vector to parse
+					// call parse object with lineTokens as input
 					compoundTokens = Scanner.returnCompoundTokens();
 					Scanner.clearCompoundTokens();
 
@@ -62,7 +62,9 @@ int main(int argc, char *argv[])
 					}
 					catch (errorType e)
 					{
-						cout << "Error: " << errorTokensASCII[e] << endl;
+						cout << "Error: " << errorTokensASCII[e] << "(";
+						Scanner.printCurrentLine();
+						cout << ")" << endl;
 					}
 
 					if (parse_debug)

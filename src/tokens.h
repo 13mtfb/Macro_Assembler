@@ -89,7 +89,7 @@ const vector<string> screenerTokensASCII = {
 
 enum parserTokens
 {
-	//Addressing modes
+	// Addressing modes
 	aRegisterMode,				// (R)
 	aRegisterDeferredMode,		// (@R or (ER))
 	aAutoIncrementMode,			// ((ER + ))
@@ -102,7 +102,7 @@ enum parserTokens
 	aAbsoluteMode,				// (@#E)
 	aRelativeMode,				// (E)
 	aRelativeDeferredMode,		// (@E)
-	//instruction emit
+								// instruction emit
 	aSingleOperand,
 	aDoubleOperand,
 	aBranch,
@@ -116,7 +116,7 @@ enum parserTokens
 };
 
 const vector<string> parserTokens = {
-	//Addressing modes
+	// Addressing modes
 	"aRegisterMode",
 	"aRegisterDeferredMode",
 	"aAutoIncrementMode",
@@ -129,7 +129,7 @@ const vector<string> parserTokens = {
 	"aAbsoluteMode",
 	"aRelativeMode",
 	"aRelativeDeferredMode",
-	//instruction emit
+	// instruction emit
 	"aSingleOperand",
 	"aDoubleOperand",
 	"aBranch",
@@ -145,6 +145,9 @@ enum errorType
 {
 	NO_ERROR,
 	E_ILLEGAL_STATEMENT,
+	E_ILLEGAL_STATEMENT_UNKNOWN_SYMBOL,
+	E_ILLEGAL_STATEMENT_UNKNOWN_PERIOD,
+	E_ILLEGAL_STATEMENT_INVALID_OPERAND,
 	E_MISSING_OPERATOR,
 	E_UNDEFINED_OPCODE,
 	E_ILLEGAL_OPERAND_SPECIFICATION,
@@ -156,6 +159,9 @@ enum errorType
 const vector<string> errorTokensASCII = {
 	"NO_ERROR",
 	"E_ILLEGAL_STATEMENT",
+	"E_ILLEGAL_STATEMENT_UNKNOWN_SYMBOL",
+	"E_ILLEGAL_STATEMENT_UNKNOWN_PERIOD",
+	"E_ILLEGAL_STATEMENT_INVALID_OPERAND"
 	"E_MISSING_OPERATOR",
 	"E_UNDEFINED_OPCODE",
 	"E_ILLEGAL_OPERAND_SPECIFICATION",

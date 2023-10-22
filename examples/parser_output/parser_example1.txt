@@ -1,0 +1,21 @@
+parsed pGlobalLabel
+parsed opcode
+aDoubleOperand
+aImmediateMode
+aRegisterMode
+parsed pLabel
+parsed opcode
+aDoubleOperand
+aAutoIncrementMode
+aRegisterMode
+parsed opcode
+Error: E_ILLEGAL_STATEMENT
+parsed opcode
+parsed pLabel
+Error: E_ILLEGAL_STATEMENT
+parsed pLabel
+NAME    VALUE   GLOBAL  TYPE
+DONE    6       N       LABEL
+1$      4       N       LABEL
+MSG     6       N       LABEL
+HELLO   0       Y       LABEL

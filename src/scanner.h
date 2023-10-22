@@ -14,6 +14,8 @@ public:
 	int scan();							   // returns next token in filestream
 	vector<string> returnCompoundTokens(); // returns vector of compound tokens
 	void clearCompoundTokens();			   // clears vector
+	void printCurrentLine();
+
 private:
 	fstream file;		 // file stream
 	string current_line; // string to hold current line
