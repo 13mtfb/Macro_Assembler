@@ -226,6 +226,8 @@ void parser::opcode()
 			{
 			case pNewLine:
 				break;
+			case pEOF:
+				break;
 			default:
 				throw(E_ILLEGAL_STATEMENT_INVALID_OPERAND);
 			}

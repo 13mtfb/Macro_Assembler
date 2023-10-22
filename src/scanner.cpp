@@ -93,7 +93,14 @@ int scanner::scan()
 		else if (current_char == ';')
 		{ // cSemiColon
 			current_position = current_line.length();
-			return pNewLine;
+			if (EOF_flag)
+			{
+				return pEOF;
+			}
+			else
+			{
+				return pNewLine;
+			}
 		}
 		else if (current_char == '%')
 		{ // cPercentSign

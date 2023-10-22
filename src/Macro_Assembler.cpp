@@ -38,8 +38,8 @@ int main(int argc, char *argv[])
 		if (argc > 2)
 		{ // assume Y for now
 			parse_debug = true;
-			parse = "scanner_" + filename + ".txt";
-			parse_file.open(parse, fstream::out);
+			// parse = "scanner_" + filename + ".txt";
+			parse_file.open("scanner_debug.txt", fstream::out);
 		}
 		int currentToken;
 		try
