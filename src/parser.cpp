@@ -1,7 +1,7 @@
 #include "iostream"
 #include <stdexcept>
 
-//user-defined header files
+// user-defined header files
 #include "parser.h"
 #include "tokens.h"
 #include "PST.h"
@@ -70,12 +70,12 @@ void parser::statement()
 			switch (returnNextToken())
 			{
 			case pEqual:
-				//TODO:
-				//oPushAssignment(returnCurrentCompound(), expression(), false);
+				// TODO:
+				// oPushAssignment(returnCurrentCompound(), expression(), false);
 				break;
 			case pDoubleEqual:
-				//TODO:
-				//oPushAssignment(returnCurrentCompound(), expression(), true);
+				// TODO:
+				// oPushAssignment(returnCurrentCompound(), expression(), true);
 				break;
 			default:
 				throw(E_ILLEGAL_STATEMENT);
@@ -85,8 +85,8 @@ void parser::statement()
 	case pPeriod:
 		if (returnNextToken() == pEqual)
 		{
-			//TODO
-			//locationCounter = expression();
+			// TODO
+			// locationCounter = expression();
 		}
 		else
 		{
@@ -95,7 +95,7 @@ void parser::statement()
 		break;
 	case pNewLine:
 	case pEOF:
-		//ignore - no processing needed
+		// ignore - no processing needed
 		break;
 	default:
 		throw(E_ILLEGAL_STATEMENT);
@@ -107,7 +107,7 @@ int parser::screener(string symbol)
 	// return enum which matches type of symbol
 	int screenerReturn = UNKNOWN;
 
-	//length of PST arrays
+	// length of PST arrays
 	int instructionLength = sizeof(instruction) / sizeof(opCode);
 	int directiveLength = sizeof(directive) / sizeof(asmDir);
 
@@ -134,7 +134,7 @@ int parser::screener(string symbol)
 	{
 		if (symbol == instruction[i].mnemonic)
 		{						 // if symbol matches opcode, then return opcode!
-			op = instruction[i]; //set opcode in parser object
+			op = instruction[i]; // set opcode in parser object
 			screenerReturn = OPCODE;
 		}
 	}
@@ -142,8 +142,8 @@ int parser::screener(string symbol)
 	{ // if symbol matches assembler directive, then return that!
 		if (symbol == directive[i].directive)
 		{
-			//TODO:
-			// create asm variable in class and set to directive
+			// TODO:
+			//  create asm variable in class and set to directive
 			screenerReturn = ASSEMBLERDIRECTIVE;
 		}
 	}
@@ -152,8 +152,8 @@ int parser::screener(string symbol)
 		// i.second is the userSymbol value from the map
 		if (symbol == i.first)
 		{
-			//TODO:
-			// create sym variable in class and set to type (or value?)
+			// TODO:
+			//  create sym variable in class and set to type (or value?)
 			screenerReturn = SYMBOL;
 		}
 	}
@@ -207,6 +207,8 @@ void parser::opcode()
 		{
 		case pNewLine:
 			break;
+		case pEOF:
+			break;
 		default:
 			throw(E_ILLEGAL_STATEMENT);
 		}
@@ -233,34 +235,34 @@ void parser::opcode()
 		}
 		break;
 	case DOUBLE_OPERAND_2:
-		//TODO
+		// TODO
 		break;
 	case BRANCH:
-		//TODO
+		// TODO
 		break;
 	case JUMP_SUBROUTINE_RTS:
-		//TODO
+		// TODO
 		break;
 	case JUMP_SUBROUTINE_MARK:
-		//TODO
+		// TODO
 		break;
 	case JUMP_SUBROUTINE_SOB:
-		//TODO
+		// TODO
 		break;
 	case TRAP_INTERRUPT_1:
-		//TODO
+		// TODO
 		break;
 	case TRAP_INTERRUPT_2:
-		//TODO
+		// TODO
 		break;
 	case CONDITION_CODE:
-		//TODO
+		// TODO
 		break;
 	case MISCELLANEOUS:
-		//TODO
+		// TODO
 		break;
 	case MISCELLANEOUS_SPL:
-		//TODO
+		// TODO
 		break;
 	default:
 		throw(E_UNDEFINED_OPCODE);
@@ -297,8 +299,8 @@ void parser::operand()
 			}
 			break;
 		default:
-			//re-adjust compound index to point to first
-			//token in expression
+			// re-adjust compound index to point to first
+			// token in expression
 			compoundIndex--;
 			indexOrRelative();
 		}
@@ -321,8 +323,8 @@ void parser::operand()
 				}
 				break;
 			default:
-				//re-adjust line index to point to token
-				//immediately after expression
+				// re-adjust line index to point to token
+				// immediately after expression
 				lineIndex--;
 				cout << "aRegisterDeferredMode" << endl;
 			}
@@ -375,8 +377,8 @@ void parser::operand()
 
 void parser::indexOrRelative()
 {
-	//re-adjust line index to point to first
-	//token in expression
+	// re-adjust line index to point to first
+	// token in expression
 	lineIndex--;
 	expression();
 	switch (returnNextToken())
@@ -401,8 +403,8 @@ void parser::indexOrRelative()
 		}
 		break;
 	default:
-		//re-adjust line index to point to token
-		//immediately after expression
+		// re-adjust line index to point to token
+		// immediately after expression
 		lineIndex--;
 		locationCounter += 2;
 		if (!deferredAddressing)
@@ -431,8 +433,8 @@ void parser::expression()
 		expression();
 		break;
 	default:
-		//re-adjust line index to point to token
-		//immediately after expression
+		// re-adjust line index to point to token
+		// immediately after expression
 		lineIndex--;
 	}
 }
@@ -448,8 +450,8 @@ void parser::registerexpression()
 			break;
 		default:
 			expression();
-			//oChooseExpression >> Type
-			// NOTE: IF NOT ABSOLUTE THEN THROW EXCEPTION
+			// oChooseExpression >> Type
+			//  NOTE: IF NOT ABSOLUTE THEN THROW EXCEPTION
 		}
 		break;
 	default:
@@ -464,7 +466,7 @@ void parser::term()
 	case pPlus:
 	case pMinus:
 	case pUnary:
-		//oPushTermOperator
+		// oPushTermOperator
 		term();
 		break;
 	case pLeftBracket:
@@ -472,18 +474,18 @@ void parser::term()
 		switch (returnNextToken())
 		{
 		case pRightBracket:
-			//oEvaluateTerm
+			// oEvaluateTerm
 			break;
 		default:
 			throw(E_ILLEGAL_TERM);
 		}
 		break;
 	case pNumericLiteral:
-		returnNextCompound(); //for now, just consume compound token
-		//oEvaluateTerm
+		returnNextCompound(); // for now, just consume compound token
+		// oEvaluateTerm
 		break;
 	case pPeriod:
-		//oEvaluateTerm
+		// oEvaluateTerm
 		break;
 	case pSymbol:
 		switch (screener(returnNextCompound()))
@@ -491,7 +493,7 @@ void parser::term()
 		case SYMBOL:
 		case OPCODE:
 		case UNKNOWN:
-			//oEvaluateTerm
+			// oEvaluateTerm
 			break;
 		default:
 			throw(E_ILLEGAL_TERM);
@@ -501,8 +503,8 @@ void parser::term()
 		switch (returnNextToken())
 		{
 		case pSymbol:
-			//check if single ASCII character
-			//oEvaluateTerm
+			// check if single ASCII character
+			// oEvaluateTerm
 			break;
 		default:
 			throw(E_ILLEGAL_TERM);
@@ -512,8 +514,8 @@ void parser::term()
 		switch (returnNextToken())
 		{
 		case pSymbol:
-			//check if double ASCII character
-			//oEvaluateTerm
+			// check if double ASCII character
+			// oEvaluateTerm
 			break;
 		default:
 			throw(E_ILLEGAL_TERM);
@@ -563,25 +565,26 @@ string parser::returnNextCompound()
 }
 
 //// MECHANISMS ////
-//oPushLabel inserts a label into the UST hashmap
-// returns true if successful, or false if label already exists
+// oPushLabel inserts a label into the UST hashmap
+//  returns true if successful, or false if label already exists
 bool parser::oPushLabel(string label, bool global)
 {
+	bool duplicate;
 	userSymbol add = {
 		locationCounter,
 		global,
 		userSymbol::LABEL};
-	//second is the bool which indicates if the new element was inserted
+	// second is the bool which indicates if the new element was inserted
 	return UST.insert({label, add}).second;
 }
-//oPushAssignment inserts an equate into the UST hashmap
-// returns true if successful, or false if the equate already exists
+// oPushAssignment inserts an equate into the UST hashmap
+//  returns true if successful, or false if the equate already exists
 bool parser::oPushAssignment(string equate, int value, bool global)
 {
 	userSymbol add = {
 		value,
 		global,
 		userSymbol::EQUATE};
-	//second is the bool which indicates if the new element was inserted
+	// second is the bool which indicates if the new element was inserted
 	return UST.insert({equate, add}).second;
 }

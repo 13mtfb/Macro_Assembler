@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/Macro_Assembler.exe",
             "args": [
-                "../examples/example_1.txt" // Filename for local debugging
+                "../examples/debug.txt" // Filename for local debugging
             ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

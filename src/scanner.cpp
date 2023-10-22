@@ -1,7 +1,7 @@
 #include "iostream"
 #include <stdexcept>
 
-//user-defined header files
+// user-defined header files
 #include "scanner.h"
 #include "tokens.h"
 
@@ -10,14 +10,22 @@ using namespace std;
 //// PUBLIC METHODS ////
 scanner::scanner(string filepath)
 {
-	file.open(filepath, fstream::in); //open the file passed to the class
+	file.open(filepath, fstream::in); // open the file passed to the class
 	if (!file.is_open())
-	{ //if not succesful, print error message
+	{ // if not succesful, print error message
 		throw runtime_error("Could not open file");
 	}
 	getline(file, current_line);
 	current_position = -1;
-	EOF_flag = false;
+	// handle edge case where file only contains one line
+	if (file.eof())
+	{
+		EOF_flag = true;
+	}
+	else
+	{
+		EOF_flag = false;
+	}
 }
 
 scanner::~scanner()
@@ -28,7 +36,7 @@ int scanner::scan()
 {
 	current_position++;
 	if (current_position > current_line.length())
-	{ //cEOF
+	{ // cEOF
 		getline(file, current_line);
 		current_position = 0;
 		if (file.eof())
@@ -40,11 +48,11 @@ int scanner::scan()
 	while (1)
 	{
 		if (current_char == ' ' || current_char == '\t')
-		{ //cSpace, cTab
+		{ // cSpace, cTab
 			advanceChar();
 		}
 		else if (current_position == current_line.length())
-		{ //cNewLine, cEOF
+		{ // cNewLine, cEOF
 			if (EOF_flag)
 			{
 				return pEOF;
@@ -55,22 +63,22 @@ int scanner::scan()
 			}
 		}
 		else if (current_char == '.')
-		{ //cPeriod
+		{ // cPeriod
 			buffer = current_char;
 			return LocationOrSymbol();
 		}
 		else if (isdigit(current_char))
-		{ //cDigit
+		{ // cDigit
 			buffer = current_char;
 			return NumericLiteralOrSymbol();
 		}
 		else if (isalpha(current_char) || current_char == '$')
-		{ //cLetter, cDollarsign
+		{ // cLetter, cDollarsign
 			buffer = current_char;
 			return Symbol();
 		}
 		else if (current_char == '=')
-		{ //cEqual
+		{ // cEqual
 			advanceChar();
 			if (current_char == '=')
 			{
@@ -83,88 +91,88 @@ int scanner::scan()
 			}
 		}
 		else if (current_char == ';')
-		{ //cSemiColon
+		{ // cSemiColon
 			current_position = current_line.length();
 			return pNewLine;
 		}
 		else if (current_char == '%')
-		{ //cPercentSign
+		{ // cPercentSign
 			return pRegisterTerm;
 		}
 		else if (current_char == ',')
-		{ //cComma
+		{ // cComma
 			return pOperandFieldSeperator;
 		}
 		else if (current_char == '#')
-		{ //cBang
+		{ // cBang
 			return pImmediateExpressionIndicator;
 		}
 		else if (current_char == '@')
-		{ //cAt
+		{ // cAt
 			return pDeferredAddressingIndicator;
 		}
 		else if (current_char == '(')
-		{ //cLeftParen
+		{ // cLeftParen
 			return pLeftParen;
 		}
 		else if (current_char == ')')
-		{ //cRightParen
+		{ // cRightParen
 			return pRightParen;
 		}
 		else if (current_char == '<')
-		{ //cLeftBracket
+		{ // cLeftBracket
 			return pLeftBracket;
 		}
 		else if (current_char == '>')
-		{ //cRightBracket
+		{ // cRightBracket
 			return pRightBracket;
 		}
 		else if (current_char == '+')
-		{ //cPlus
+		{ // cPlus
 			return pPlus;
 		}
 		else if (current_char == '-')
-		{ //cMinus
+		{ // cMinus
 			return pMinus;
 		}
 		else if (current_char == '*')
-		{ //cAsterisk
+		{ // cAsterisk
 			return pMultiply;
 		}
 		else if (current_char == '/')
-		{ //cSlash
+		{ // cSlash
 			return pDivide;
 		}
 		else if (current_char == '&')
-		{ //cAmpersand
+		{ // cAmpersand
 			return pAnd;
 		}
 		else if (current_char == '!')
-		{ //cExclamation
+		{ // cExclamation
 			return pOr;
 		}
 		else if (current_char == '"')
-		{ //cDoubleQuote
+		{ // cDoubleQuote
 			return pDoubleASCII;
 		}
 		else if (current_char == '\'')
-		{ //cSingleQuote
+		{ // cSingleQuote
 			return pSingleASCII;
 		}
 		else if (current_char == '^')
-		{ //cCircumflex
+		{ // cCircumflex
 			return pUnary;
 		}
 		else if (current_char == '^')
-		{ //cCircumflex
+		{ // cCircumflex
 			return pUnary;
 		}
 		else if (current_char == '\\')
-		{ //cBackslash
+		{ // cBackslash
 			return pBackslash;
 		}
 		else
-		{ //illegalCharacter
+		{ // illegalCharacter
 			buffer = current_line.substr(current_position, 1);
 			compoundTokens.push_back(buffer);
 			return eIllegalChar;
@@ -231,7 +239,7 @@ int scanner::Symbol()
 			buffer += current_char;
 		}
 		else if (current_char == ':')
-		{ //cColon
+		{ // cColon
 			advanceChar();
 			if (current_char == ':')
 			{
