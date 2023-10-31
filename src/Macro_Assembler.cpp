@@ -60,38 +60,40 @@ int main(int argc, char *argv[])
 	parse_file.open("scanner_debug.txt", fstream::out);
 
 	int currentToken;
+	scanner Scanner(filename);
+	parser Parser;
 	try
 	{
-		scanner Scanner(filename);
-		parser Parser;
 		do
 		{ // scan each token to end of file
 			currentToken = Scanner.scan();
 			lineTokens.push_back(currentToken); // add token to line
 			if (currentToken == pNewLine || currentToken == pEOF)
-			{ // if reached end of line, pass vector to parse
+			{
+				// if reached end of line, pass vector to parse
 				// call parse object with lineTokens as input
 				compoundTokens = Scanner.returnCompoundTokens();
-				Scanner.clearCompoundTokens();
 
-				try
-				{
-					Parser.parse(lineTokens, compoundTokens);
-				}
-				catch (errorType e)
-				{
-					cout << "Error: " << errorTokensASCII[e] << "(";
-					Scanner.printCurrentLine();
-					cout << ")" << endl;
-				}
+				Parser.parse(lineTokens, compoundTokens);
 
+				// output logging
 				output_debug(parse_file, lineTokens, compoundTokens, Parser);
 
+				// cleanup from previous line processing
 				lineTokens.clear();
+				Scanner.clearCompoundTokens();
 			}
 		} while (currentToken != pEOF);
 		Parser.printUST();
 	}
+	// catch assembler errors
+	catch (errorType e)
+	{
+		cout << "Error: " << errorTokensASCII[e] << "(";
+		Scanner.printCurrentLine();
+		cout << ")" << endl;
+	}
+	// catch program errors
 	catch (exception &ex)
 	{
 		cout << "error: " << ex.what() << endl;
