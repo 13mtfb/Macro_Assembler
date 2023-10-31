@@ -1,6 +1,6 @@
 # Macro_Assembler
 
-A C++ implementation of the Macro-11 Assembler by Digital Equipment Corporation ([Macro-11 Reference](http://bitsavers.org/pdf/dec/pdp11/rsx11/RSX11M_V3.2_Jun79/3A_ProgramDevelopment/DEC-11-OIMRA-B-D_MACRO-11_Reference_Dec76.pdf))
+A C++ implementation of the Macro-11 Assembler by Digital Equipment Corporation ([Macro-11 Reference](https://bitsavers.org/pdf/dec/pdp11/rsx11m_s/RSX11M_V3.2_Jun79/3A_ProgramDevelopment/DEC-11-OIMRA-B-D_MACRO-11_Reference_Dec76.pdf)
 
 ## Assembler Construction
 
