@@ -1,6 +1,14 @@
-opcode(MOV)
-pImmediateExpressionIndicator
-pNumericLiteral(5)
-pOperandFieldSeperator
-register(R2)
-pEOF
+Pass 1: pLabel(HELLO)
+Pass 1: opcode(MOV)
+Pass 1: pImmediateExpressionIndicator
+Pass 1: pNumericLiteral(5)
+Pass 1: pOperandFieldSeperator
+Pass 1: register(R2)
+Pass 1: pEOF
+Pass 2: pLabel(HELLO)
+Pass 2: opcode(MOV)
+Pass 2: pImmediateExpressionIndicator
+Pass 2: pNumericLiteral(5)
+Pass 2: pOperandFieldSeperator
+Pass 2: register(R2)
+Pass 2: pEOF

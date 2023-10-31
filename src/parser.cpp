@@ -13,6 +13,9 @@ parser::parser()
 {
 	locationCounter = 00;
 	UST.clear();
+
+	// assume when constructing the object we are doing a first pass
+	second_pass = false;
 }
 
 void parser::parse(vector<int> l, vector<string> c)
@@ -31,25 +34,31 @@ void parser::statement()
 	{
 	case pLabel:
 		// attempt to insert label into the UST
-		if (oPushLabel(returnNextCompound(), false))
+		if (!second_pass)
 		{
-			cout << "parsed pLabel" << endl;
-			statement();
-		}
-		else
-		{
-			throw(E_MULTIPLE_DEFINED_SYMBOL);
+			if (oPushLabel(returnNextCompound(), false))
+			{
+				cout << "parsed pLabel" << endl;
+				statement();
+			}
+			else
+			{
+				throw(E_MULTIPLE_DEFINED_SYMBOL);
+			}
 		}
 		break;
 	case pGlobalLabel:
-		if (oPushLabel(returnNextCompound(), true))
+		if (!second_pass)
 		{
-			cout << "parsed pGlobalLabel" << endl;
-			statement();
-		}
-		else
-		{
-			throw(E_MULTIPLE_DEFINED_SYMBOL);
+			if (oPushLabel(returnNextCompound(), true))
+			{
+				cout << "parsed pGlobalLabel" << endl;
+				statement();
+			}
+			else
+			{
+				throw(E_MULTIPLE_DEFINED_SYMBOL);
+			}
 		}
 		break;
 	case pSymbol:
@@ -154,6 +163,7 @@ int parser::screener(string symbol)
 		{
 			// TODO:
 			//  create sym variable in class and set to type (or value?)
+			sym_val = i.second.value;
 			screenerReturn = SYMBOL;
 		}
 	}
@@ -191,6 +201,11 @@ void parser::printUST()
 		cout << global << "\t";
 		cout << type << endl;
 	}
+}
+
+void parser::setPassTwo()
+{
+	second_pass = true;
 }
 
 //// PRIVATE METHODS ////

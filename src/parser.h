@@ -9,14 +9,15 @@ using namespace std;
 class parser
 {
 public:
-	parser(); //constructs a parser object
+	parser(); // constructs a parser object
 	int screener(string symbol);
 	void parse(vector<int> line, vector<string> compound);
-	void statement();
 	void printUST();
+	void setPassTwo();
 
 private:
-	//parse methods
+	// parse methods
+	void statement();
 	void opcode();
 	void operand();
 	void indexOrRelative();
@@ -24,9 +25,10 @@ private:
 	void expression();
 	void term();
 
-	//private data
+	// private data
 	opCode op;
 	int reg;
+	int sym_val;
 
 	//// UTILITY METHODS ////
 	int returnCurrentToken();
@@ -61,4 +63,5 @@ private:
 	//// ASSEMBLER VARIABLES ////
 	int locationCounter; // note: ASSUME single PSECT for now
 	unordered_map<string, userSymbol> UST;
+	bool second_pass;
 };

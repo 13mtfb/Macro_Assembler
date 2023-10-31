@@ -20,11 +20,13 @@ using namespace std;
 
 // Utility function to output parser to file for debugging
 // TODO: move to a separate file, or otherwise clean it up
-void output_debug(fstream &f, vector<int> &lineTokens, vector<string> &compoundTokens, parser &Parser)
+void output_debug(int pass, fstream &f, vector<int> &lineTokens, vector<string> &compoundTokens, parser &Parser)
 { // if parse_debug is true, output to file
 	int j = 0;
 	for (unsigned int i = 0; i < lineTokens.size(); i++)
 	{
+		f << "Pass " << pass << ": ";
+
 		if (lineTokens[i] == pSymbol)
 		{
 			f << screenerTokensASCII[Parser.screener(compoundTokens[j])];
@@ -62,6 +64,8 @@ int main(int argc, char *argv[])
 	int currentToken;
 	scanner Scanner(filename);
 	parser Parser;
+
+	// pass - 1
 	try
 	{
 		do
@@ -77,7 +81,47 @@ int main(int argc, char *argv[])
 				Parser.parse(lineTokens, compoundTokens);
 
 				// output logging
-				output_debug(parse_file, lineTokens, compoundTokens, Parser);
+				output_debug(1, parse_file, lineTokens, compoundTokens, Parser);
+
+				// cleanup from previous line processing
+				lineTokens.clear();
+				Scanner.clearCompoundTokens();
+			}
+		} while (currentToken != pEOF);
+		Parser.printUST();
+	}
+	// catch assembler errors
+	catch (errorType e)
+	{
+		cout << "Error: " << errorTokensASCII[e] << "(";
+		Scanner.printCurrentLine();
+		cout << ")" << endl;
+	}
+	// catch program errors
+	catch (exception &ex)
+	{
+		cout << "error: " << ex.what() << endl;
+	}
+
+	Parser.setPassTwo();
+
+	// pass - 2
+	try
+	{
+		do
+		{ // scan each token to end of file
+			currentToken = Scanner.scan();
+			lineTokens.push_back(currentToken); // add token to line
+			if (currentToken == pNewLine || currentToken == pEOF)
+			{
+				// if reached end of line, pass vector to parse
+				// call parse object with lineTokens as input
+				compoundTokens = Scanner.returnCompoundTokens();
+
+				Parser.parse(lineTokens, compoundTokens);
+
+				// output logging
+				output_debug(2, parse_file, lineTokens, compoundTokens, Parser);
 
 				// cleanup from previous line processing
 				lineTokens.clear();
