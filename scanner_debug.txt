@@ -1,0 +1,6 @@
+opcode(MOV)
+pImmediateExpressionIndicator
+pNumericLiteral(5)
+pOperandFieldSeperator
+register(R2)
+pEOF

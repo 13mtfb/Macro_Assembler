@@ -18,8 +18,31 @@
 
 using namespace std;
 
-// Macro_Assembler meta variables
-bool parse_debug = false;
+// Utility function to output parser to file for debugging
+// TODO: move to a separate file, or otherwise clean it up
+void output_debug(fstream &f, vector<int> &lineTokens, vector<string> &compoundTokens, parser &Parser)
+{ // if parse_debug is true, output to file
+	int j = 0;
+	for (unsigned int i = 0; i < lineTokens.size(); i++)
+	{
+		if (lineTokens[i] == pSymbol)
+		{
+			f << screenerTokensASCII[Parser.screener(compoundTokens[j])];
+			f << "(" << compoundTokens[j] << ")";
+			j++;
+		}
+		else
+		{
+			f << scannerTokensASCII[lineTokens[i]];
+			if (lineTokens[i] == pLabel || lineTokens[i] == pGlobalLabel || lineTokens[i] == pNumericLiteral || lineTokens[i] == eIllegalChar)
+			{
+				f << "(" << compoundTokens[j] << ")";
+				j++;
+			}
+		}
+		f << endl;
+	}
+}
 
 int main(int argc, char *argv[])
 {
@@ -30,76 +53,51 @@ int main(int argc, char *argv[])
 	if (argc < 2)
 	{ // we expect at least 2 arguments: program name and source filename
 		std::cerr << "Usage: " << argv[0] << " SOURCE_FILENAME" << endl;
+		return 1;
 	}
-	else
+	filename = argv[1]; // TODO: add command line specification
+
+	parse_file.open("scanner_debug.txt", fstream::out);
+
+	int currentToken;
+	try
 	{
-		filename = argv[1]; // TODO: add command line specification
+		scanner Scanner(filename);
+		parser Parser;
+		do
+		{ // scan each token to end of file
+			currentToken = Scanner.scan();
+			lineTokens.push_back(currentToken); // add token to line
+			if (currentToken == pNewLine || currentToken == pEOF)
+			{ // if reached end of line, pass vector to parse
+				// call parse object with lineTokens as input
+				compoundTokens = Scanner.returnCompoundTokens();
+				Scanner.clearCompoundTokens();
 
-		if (argc > 2)
-		{ // assume Y for now
-			parse_debug = true;
-			// parse = "scanner_" + filename + ".txt";
-			parse_file.open("scanner_debug.txt", fstream::out);
-		}
-		int currentToken;
-		try
-		{
-			scanner Scanner(filename);
-			parser Parser;
-			do
-			{ // scan each token to end of file
-				currentToken = Scanner.scan();
-				lineTokens.push_back(currentToken); // add token to line
-				if (currentToken == pNewLine || currentToken == pEOF)
-				{ // if reached end of line, pass vector to parse
-					// call parse object with lineTokens as input
-					compoundTokens = Scanner.returnCompoundTokens();
-					Scanner.clearCompoundTokens();
-
-					try
-					{
-						Parser.parse(lineTokens, compoundTokens);
-					}
-					catch (errorType e)
-					{
-						cout << "Error: " << errorTokensASCII[e] << "(";
-						Scanner.printCurrentLine();
-						cout << ")" << endl;
-					}
-
-					if (parse_debug)
-					{ // if parse_debug is true, output to file
-						int j = 0;
-						for (unsigned int i = 0; i < lineTokens.size(); i++)
-						{
-							if (lineTokens[i] == pSymbol)
-							{
-								parse_file << screenerTokensASCII[Parser.screener(compoundTokens[j])];
-								parse_file << "(" << compoundTokens[j] << ")";
-								j++;
-							}
-							else
-							{
-								parse_file << scannerTokensASCII[lineTokens[i]];
-								if (lineTokens[i] == pLabel || lineTokens[i] == pGlobalLabel || lineTokens[i] == pNumericLiteral || lineTokens[i] == eIllegalChar)
-								{
-									parse_file << "(" << compoundTokens[j] << ")";
-									j++;
-								}
-							}
-							parse_file << endl;
-						}
-					}
-					lineTokens.clear();
+				try
+				{
+					Parser.parse(lineTokens, compoundTokens);
 				}
-			} while (currentToken != pEOF);
-			Parser.printUST();
-		}
-		catch (exception &ex)
-		{
-			cout << "error: " << ex.what() << endl;
-		}
+				catch (errorType e)
+				{
+					cout << "Error: " << errorTokensASCII[e] << "(";
+					Scanner.printCurrentLine();
+					cout << ")" << endl;
+				}
+
+				output_debug(parse_file, lineTokens, compoundTokens, Parser);
+
+				lineTokens.clear();
+			}
+		} while (currentToken != pEOF);
+		Parser.printUST();
 	}
+	catch (exception &ex)
+	{
+		cout << "error: " << ex.what() << endl;
+	}
+
+	parse_file.close();
 
 	return 0;
 }
