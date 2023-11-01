@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "iostream": "cpp"
     },
     "editor.formatOnSave": true,
     "cmake.configureOnOpen": true,

@@ -28,6 +28,7 @@ private:
 	// private data
 	opCode op;
 	int reg;
+	int reg_mode;
 	int sym_val;
 
 	//// UTILITY METHODS ////

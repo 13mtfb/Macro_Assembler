@@ -232,11 +232,17 @@ void parser::opcode()
 		locationCounter += 2;
 		cout << "aDoubleOperand" << endl;
 		operand();
+		op.opcode = op.opcode | (reg_mode << 9);
+		op.opcode = op.opcode | (reg << 6);
 		deferredAddressing = false;
 		switch (returnNextToken())
 		{
 		case pOperandFieldSeperator:
 			operand();
+			op.opcode = op.opcode | (reg_mode << 3);
+			op.opcode = op.opcode | (reg << 0);
+			cout << std::oct << std::setfill('0') << std::setw(6) << op.opcode << endl;
+
 			switch (returnNextToken())
 			{
 			case pNewLine:
@@ -309,6 +315,7 @@ void parser::operand()
 			if (!deferredAddressing)
 			{
 				cout << "aRegisterMode" << endl;
+				reg_mode = aRegisterMode;
 			}
 			else
 			{
