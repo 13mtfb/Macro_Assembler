@@ -40,11 +40,11 @@ oChooseExpression
 	% return the most recently evaluated expression type (absolute, relocatable, external, complex relocatable)
 oChooseExpressionValue
 	% return the value of the most recently evaluated expression (must be absolute expression)
-oPushlabel(label)
+oPushlabel(label) - DONE
 	%Push the label to the UST along with the value of the current location counter
-oPushAssignment(equate)
+oPushAssignment(equate) - DONE
 	%Push the equate to the UST along with the value of the assignment statement
-oChooseSymbol (symbol)
+oChooseSymbol (symbol) - DONE (screener)
 	% return the type of expression
 		Opcode - if symbol matches string in opcode table (PST)
 		AssemblerDirective - if symbol matches string in the assembler directive table (PST)

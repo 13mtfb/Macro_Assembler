@@ -314,11 +314,12 @@ void parser::operand()
 		case REGISTER:
 			if (!deferredAddressing)
 			{
-				cout << "aRegisterMode" << endl;
 				reg_mode = aRegisterMode;
+				cout << "aRegisterMode" << endl;
 			}
 			else
 			{
+				reg_mode = aRegisterDeferredMode;
 				cout << "aRegisterDeferredMode" << endl;
 			}
 			break;
@@ -339,10 +340,12 @@ void parser::operand()
 			case pPlus:
 				if (!deferredAddressing)
 				{
+					reg_mode = aAutoIncrementMode;
 					cout << "aAutoIncrementMode" << endl;
 				}
 				else
 				{
+					reg_mode = aAutoIncrementDeferredMode;
 					cout << "aAutoIncrementDeferredMode" << endl;
 				}
 				break;
@@ -350,6 +353,7 @@ void parser::operand()
 				// re-adjust line index to point to token
 				// immediately after expression
 				lineIndex--;
+				reg_mode = aRegisterDeferredMode;
 				cout << "aRegisterDeferredMode" << endl;
 			}
 			break;
@@ -367,10 +371,12 @@ void parser::operand()
 			case pRightParen:
 				if (!deferredAddressing)
 				{
+					reg_mode = aAutoDecrementMode;
 					cout << "aAutoDecrementMode" << endl;
 				}
 				else
 				{
+					reg_mode = aAutoDecrementDeferredMode;
 					cout << "aAutoDecrementDeferredMode" << endl;
 				}
 				break;
@@ -387,10 +393,14 @@ void parser::operand()
 		locationCounter += 2;
 		if (!deferredAddressing)
 		{
+			reg_mode = 2; // enum doesn't line up with number
+			reg = 7;
 			cout << "aImmediateMode" << endl;
 		}
 		else
 		{
+			reg_mode = 3; // enum doesn't line up with number
+			reg = 7;
 			cout << "aAbsoluteMode" << endl;
 		}
 		break;
@@ -415,10 +425,12 @@ void parser::indexOrRelative()
 			locationCounter += 2;
 			if (!deferredAddressing)
 			{
+				reg_mode = aIndexMode;
 				cout << "aIndexMode" << endl;
 			}
 			else
 			{
+				reg_mode = aIndexDeferredMode;
 				cout << "aIndexDeferredMode" << endl;
 			}
 			break;
@@ -433,10 +445,14 @@ void parser::indexOrRelative()
 		locationCounter += 2;
 		if (!deferredAddressing)
 		{
+			reg_mode = 6; // enum doesn't line up with number
+			reg = 7;
 			cout << "aRelativeMode" << endl;
 		}
 		else
 		{
+			reg_mode = 7; // enum doesn't line up with number
+			reg = 7;
 			cout << "aRelativeDeferredMode" << endl;
 		}
 	}
