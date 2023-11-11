@@ -218,6 +218,9 @@ void parser::opcode()
 		locationCounter += 2;
 		cout << "aSingleOperand" << endl;
 		operand();
+		op.opcode = op.opcode | (reg_mode << 3);
+		op.opcode = op.opcode | (reg << 0);
+		cout << std::oct << std::setfill('0') << std::setw(6) << op.opcode << endl;
 		switch (returnNextToken())
 		{
 		case pNewLine:
