@@ -30,6 +30,7 @@ scanner::scanner(string filepath)
 
 scanner::~scanner()
 {
+	file.close();
 }
 
 int scanner::scan()

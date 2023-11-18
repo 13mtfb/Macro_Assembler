@@ -104,19 +104,22 @@ int main(int argc, char *argv[])
 	}
 
 	Parser.setPassTwo();
+	// define another scan object to make sure
+	// scan scans same tokens
+	scanner ScanTwo(filename);
 
 	// pass - 2
 	try
 	{
 		do
 		{ // scan each token to end of file
-			currentToken = Scanner.scan();
+			currentToken = ScanTwo.scan();
 			lineTokens.push_back(currentToken); // add token to line
 			if (currentToken == pNewLine || currentToken == pEOF)
 			{
 				// if reached end of line, pass vector to parse
 				// call parse object with lineTokens as input
-				compoundTokens = Scanner.returnCompoundTokens();
+				compoundTokens = ScanTwo.returnCompoundTokens();
 
 				Parser.parse(lineTokens, compoundTokens);
 
@@ -125,7 +128,7 @@ int main(int argc, char *argv[])
 
 				// cleanup from previous line processing
 				lineTokens.clear();
-				Scanner.clearCompoundTokens();
+				ScanTwo.clearCompoundTokens();
 			}
 		} while (currentToken != pEOF);
 		Parser.printUST();
@@ -134,7 +137,7 @@ int main(int argc, char *argv[])
 	catch (errorType e)
 	{
 		cout << "Error: " << errorTokensASCII[e] << "(";
-		Scanner.printCurrentLine();
+		ScanTwo.printCurrentLine();
 		cout << ")" << endl;
 	}
 	// catch program errors
