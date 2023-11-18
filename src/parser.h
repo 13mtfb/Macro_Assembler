@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <queue>
 #include "PST.h"
 
 using namespace std;
@@ -29,6 +30,8 @@ private:
 	opCode op;
 	int reg;
 	int reg_mode;
+	int expr;
+
 	int sym_val;
 
 	//// UTILITY METHODS ////
@@ -60,9 +63,16 @@ private:
 	//// MECHANISMS ////
 	bool oPushLabel(string label, bool global);
 	bool oPushAssignment(string equate, int value, bool global);
+	void oPushTermOperator(int oper);
+	void oPushExpressionOperator(int oper);
+	void oEvaluateTerm(int term);
+	void oEvaluateExpression();
 
 	//// ASSEMBLER VARIABLES ////
 	int locationCounter; // note: ASSUME single PSECT for now
 	unordered_map<string, userSymbol> UST;
+	queue<int> term_operator_queue;
+	queue<int> expression_operator_queue;
+	queue<int> expression_queue;
 	bool second_pass;
 };

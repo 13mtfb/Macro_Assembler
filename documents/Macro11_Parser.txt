@@ -53,14 +53,14 @@ oChooseSymbol (symbol) - DONE (screener)
 			Register - symbol is a register mnemonic (R0, etc.) or assigned to an absolute 
 			expression (in the range 0-7) proceeded by a percent sign.
 		Unknown - if symbol does not match any of strings in the PST, MST, or UST.
-oPushTermOperator
+oPushTermOperator - DONE
 	% push the term operator to the Term Operator Stack
-oEvaluateTerm
+oEvaluateTerm - DONE
 	% pop the term operators from the term operator stack and apply them to the term. Push the evaluated term
 	 to the expression stack.
-oPushExpressionOperator
+oPushExpressionOperator - DONE 
 	% push the expression operator to the expression operator stack
-oEvaluateExpression
+oEvaluateExpression - IN PROGRESS
 	% pop the expression operators from the expression operator stack, and apply them to the term stack.
 	  Store in local storage for later processing.
 
