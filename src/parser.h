@@ -62,7 +62,7 @@ private:
 
 	//// MECHANISMS ////
 	bool oPushLabel(string label, bool global);
-	bool oPushAssignment(string equate, int value, bool global);
+	void oPushAssignment(string equate, int value, bool global);
 	void oPushTermOperator(int oper);
 	void oPushExpressionOperator(int oper);
 	void oEvaluateTerm(int term);

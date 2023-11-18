@@ -76,16 +76,23 @@ void parser::statement()
 			// TODO
 			break;
 		case UNKNOWN:
+		case SYMBOL:
 			switch (returnNextToken())
 			{
 			case pEqual:
-				// TODO:
-				// oPushAssignment(returnCurrentCompound(), expression(), false);
+			{
+				string sym = returnCurrentCompound();
+				expression();
+				oPushAssignment(sym, expr, false);
 				break;
+			}
 			case pDoubleEqual:
-				// TODO:
-				// oPushAssignment(returnCurrentCompound(), expression(), true);
+			{
+				string sym = returnCurrentCompound();
+				expression();
+				oPushAssignment(sym, expr, true);
 				break;
+			}
 			default:
 				throw(E_ILLEGAL_STATEMENT_UNKNOWN_SYMBOL);
 			}
@@ -220,7 +227,13 @@ void parser::opcode()
 		operand();
 		op.opcode = op.opcode | (reg_mode << 3);
 		op.opcode = op.opcode | (reg << 0);
-		cout << std::oct << std::setfill('0') << std::setw(6) << op.opcode << endl;
+		cout << std::oct << std::setfill('0') << std::setw(6) << op.opcode << "\t";
+		// TODO: Remove super ugly way to print operand
+		if (reg == 7 || reg_mode == 6 || reg_mode == 7)
+		{
+			cout << std::oct << std::setfill('0') << std::setw(6) << expr;
+		}
+		cout << endl;
 		switch (returnNextToken())
 		{
 		case pNewLine:
@@ -232,11 +245,21 @@ void parser::opcode()
 		}
 		break;
 	case DOUBLE_OPERAND_1:
+	{
 		locationCounter += 2;
 		cout << "aDoubleOperand" << endl;
 		operand();
 		op.opcode = op.opcode | (reg_mode << 9);
 		op.opcode = op.opcode | (reg << 6);
+		// TODO: Remove super ugly way to print double-operand instructions
+		int expr1;
+		bool print1 = false;
+		if (reg == 7 || reg_mode == 6 || reg_mode == 7)
+		{
+			// TODO: Increment location counter?
+			expr1 = expr;
+			print1 = true;
+		}
 		deferredAddressing = false;
 		switch (returnNextToken())
 		{
@@ -244,8 +267,18 @@ void parser::opcode()
 			operand();
 			op.opcode = op.opcode | (reg_mode << 3);
 			op.opcode = op.opcode | (reg << 0);
-			cout << std::oct << std::setfill('0') << std::setw(6) << op.opcode << endl;
-
+			cout << std::oct << std::setfill('0') << std::setw(6) << op.opcode << "\t";
+			// TODO: Remove super ugly way to print double-operand instructions
+			if (print1)
+			{
+				cout << std::oct << std::setfill('0') << std::setw(6) << expr1 << "\t";
+			}
+			if (reg == 7 || reg_mode == 6 || reg_mode == 7)
+			{
+				// TODO: Increment location counter?
+				cout << std::oct << std::setfill('0') << std::setw(6) << expr << "\t";
+			}
+			cout << endl;
 			switch (returnNextToken())
 			{
 			case pNewLine:
@@ -260,6 +293,7 @@ void parser::opcode()
 			throw(E_MISSING_OPERATOR);
 		}
 		break;
+	}
 	case DOUBLE_OPERAND_2:
 		// TODO
 		break;
@@ -630,14 +664,15 @@ bool parser::oPushLabel(string label, bool global)
 }
 // oPushAssignment inserts an equate into the UST hashmap
 //  returns true if successful, or false if the equate already exists
-bool parser::oPushAssignment(string equate, int value, bool global)
+void parser::oPushAssignment(string equate, int value, bool global)
 {
 	userSymbol add = {
 		value,
 		global,
 		userSymbol::EQUATE};
-	// second is the bool which indicates if the new element was inserted
-	return UST.insert({equate, add}).second;
+
+	// equates can be re-assigned so we don't care if it already exists in the UST
+	UST[equate] = add;
 }
 
 void parser::oPushTermOperator(int oper)
