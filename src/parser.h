@@ -23,8 +23,8 @@ private:
 	void operand();
 	void indexOrRelative();
 	void registerexpression();
-	void expression();
-	void term();
+	int expression();
+	int term();
 
 	// private data
 	opCode op;
@@ -63,16 +63,11 @@ private:
 	//// MECHANISMS ////
 	bool oPushLabel(string label, bool global);
 	void oPushAssignment(string equate, int value, bool global);
-	void oPushTermOperator(int oper);
-	void oPushExpressionOperator(int oper);
-	void oEvaluateTerm(int term);
-	void oEvaluateExpression();
+	int oEvaluateTerm(int term, queue<int>);
+	int oEvaluateExpression(queue<int>, queue<int>);
 
 	//// ASSEMBLER VARIABLES ////
 	int locationCounter; // note: ASSUME single PSECT for now
 	unordered_map<string, userSymbol> UST;
-	queue<int> term_operator_queue;
-	queue<int> expression_operator_queue;
-	queue<int> expression_queue;
 	bool second_pass;
 };

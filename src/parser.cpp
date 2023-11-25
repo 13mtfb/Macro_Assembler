@@ -83,14 +83,14 @@ void parser::statement()
 			case pEqual:
 			{
 				string sym = returnCurrentCompound();
-				expression();
+				expr = expression();
 				oPushAssignment(sym, expr, false);
 				break;
 			}
 			case pDoubleEqual:
 			{
 				string sym = returnCurrentCompound();
-				expression();
+				expr = expression();
 				oPushAssignment(sym, expr, true);
 				break;
 			}
@@ -430,7 +430,7 @@ void parser::operand()
 		}
 		break;
 	case pImmediateExpressionIndicator:
-		expression();
+		expr = expression();
 		locationCounter += 2;
 		if (!deferredAddressing)
 		{
@@ -455,7 +455,7 @@ void parser::indexOrRelative()
 	// re-adjust line index to point to first
 	// token in expression
 	lineIndex--;
-	expression();
+	expr = expression();
 	switch (returnNextToken())
 	{
 	case pLeftParen:
@@ -499,27 +499,24 @@ void parser::indexOrRelative()
 	}
 }
 
-void parser::expression()
+int parser::expression()
 {
-	term();
+	queue<int> expression_operator_queue;
+	queue<int> expression_queue;
+
+	expression_queue.push(term());
 	int token = returnNextToken();
-	switch (token)
+	while (token == pPlus || token == pMinus || token == pMultiply || token == pDivide || token == pAnd || token == pOr)
 	{
-	case pPlus:
-	case pMinus:
-	case pMultiply:
-	case pDivide:
-	case pAnd:
-	case pOr:
-		oPushExpressionOperator(token);
-		expression();
-		break;
-	default:
-		// re-adjust line index to point to token
-		// immediately after expression
-		oEvaluateExpression();
-		lineIndex--;
+		expression_operator_queue.push(token);
+		expression_queue.push(term());
+		token = returnNextToken();
 	}
+
+	// re-adjust line index to point to token
+	// immediately after expression
+	lineIndex--;
+	return oEvaluateExpression(expression_queue, expression_operator_queue);
 }
 
 void parser::registerexpression()
@@ -532,7 +529,7 @@ void parser::registerexpression()
 		case REGISTER:
 			break;
 		default:
-			expression();
+			expr = expression();
 			// oChooseExpression >> Type
 			//  NOTE: IF NOT ABSOLUTE THEN THROW EXCEPTION
 		}
@@ -542,47 +539,47 @@ void parser::registerexpression()
 	}
 }
 
-void parser::term()
+int parser::term()
 {
+	queue<int> term_operator_queue;
 	int token = returnNextToken();
+	while (token == pPlus || token == pMinus || token == pUnary)
+	{
+		term_operator_queue.push(token);
+		token = returnNextToken();
+	}
 	switch (token)
 	{
-	case pPlus:
-	case pMinus:
-	case pUnary:
-		oPushTermOperator(token);
-		term();
-		break;
 	case pLeftBracket:
-		expression(); // TODO: this seems to call oEvaluateExpression before any expression operators are available
+	{
+		int exp = expression();
 		switch (returnNextToken())
 		{
 		case pRightBracket:
-			// TODO: Figure out if we need to evaluate anything here
-			// or just confirm the term is legal
-			// oEvaluateTerm
+			return exp;
 			break;
 		default:
 			throw(E_ILLEGAL_TERM);
 		}
 		break;
+	}
 	case pNumericLiteral:
-		oEvaluateTerm(stoi(returnNextCompound()));
+		return oEvaluateTerm(stoi(returnNextCompound()), term_operator_queue);
 		break;
 	case pPeriod:
-		oEvaluateTerm(locationCounter);
+		return oEvaluateTerm(locationCounter, term_operator_queue);
 		break;
 	case pSymbol:
 		switch (screener(returnNextCompound()))
 		{
 		case SYMBOL:
-			oEvaluateTerm(sym_val);
+			return oEvaluateTerm(sym_val, term_operator_queue);
 			break;
 		case OPCODE:
-			oEvaluateTerm(op.opcode);
+			return oEvaluateTerm(op.opcode, term_operator_queue);
 		case UNKNOWN:
 			// 3.8 d) An undefined symbol is assigned a value of zero
-			oEvaluateTerm(0);
+			return oEvaluateTerm(0, term_operator_queue);
 			break;
 		default:
 			throw(E_ILLEGAL_TERM);
@@ -679,17 +676,7 @@ void parser::oPushAssignment(string equate, int value, bool global)
 	UST[equate] = add;
 }
 
-void parser::oPushTermOperator(int oper)
-{
-	term_operator_queue.push(oper);
-}
-
-void parser::oPushExpressionOperator(int oper)
-{
-	expression_operator_queue.push(oper);
-}
-
-void parser::oEvaluateTerm(int token)
+int parser::oEvaluateTerm(int token, queue<int> term_operator_queue)
 {
 	int term = token;
 	while (!term_operator_queue.empty())
@@ -711,11 +698,10 @@ void parser::oEvaluateTerm(int token)
 		term_operator_queue.pop();
 	}
 
-	// push resultant expression to expression stack (queue?)
-	expression_queue.push(term);
+	return term;
 }
 
-void parser::oEvaluateExpression()
+int parser::oEvaluateExpression(queue<int> expression_queue, queue<int> expression_operator_queue)
 {
 	// Expressions are evaluated from left to right with no operator hierarchy rules,
 	int expression = expression_queue.front();
@@ -750,5 +736,5 @@ void parser::oEvaluateExpression()
 		expression_operator_queue.pop();
 	}
 
-	expr = expression;
+	return expression;
 }

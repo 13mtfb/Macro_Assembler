@@ -3,7 +3,8 @@
         "iosfwd": "cpp",
         "iostream": "cpp",
         "__bit_reference": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "queue": "cpp"
     },
     "editor.formatOnSave": true,
     "cmake.configureOnOpen": true,
