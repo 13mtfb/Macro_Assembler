@@ -1,3 +1,6 @@
 *.exe
 build/
 *.plist
+Macro_Assembler.exe.dSYM/
+parser.exe.dSYM/
+logging.exe.dSYM/

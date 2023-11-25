@@ -5,6 +5,7 @@
 #include "parser.h"
 #include "tokens.h"
 #include "PST.h"
+#include "logging.h"
 
 using namespace std;
 
@@ -38,7 +39,7 @@ void parser::statement()
 		{
 			if (oPushLabel(returnNextCompound(), false))
 			{
-				cout << "parsed pLabel" << endl;
+				log(logDEBUG) << "parsed pLabel";
 				statement();
 			}
 			else
@@ -52,7 +53,7 @@ void parser::statement()
 		{
 			if (oPushLabel(returnNextCompound(), true))
 			{
-				cout << "parsed pGlobalLabel" << endl;
+				log(logDEBUG) << "parsed pGlobalLabel";
 				statement();
 			}
 			else
@@ -66,7 +67,7 @@ void parser::statement()
 		{
 		case OPCODE:
 			// screener loads variable 'opcode' with operator from PST
-			cout << "parsed opcode" << endl;
+			log(logDEBUG) << "parsed opcode";
 			opcode();
 			break;
 		case ASSEMBLERDIRECTIVE:
@@ -213,6 +214,7 @@ void parser::printUST()
 void parser::setPassTwo()
 {
 	second_pass = true;
+	locationCounter = 0;
 }
 
 //// PRIVATE METHODS ////
@@ -222,8 +224,8 @@ void parser::opcode()
 	switch (op.operatortype)
 	{
 	case SINGLE_OPERAND:
-		locationCounter += 2;
-		cout << "aSingleOperand" << endl;
+		log(logDEBUG) << "aSingleOperand";
+		cout << std::oct << std::setfill('0') << std::setw(6) << locationCounter << "\t";
 		operand();
 		op.opcode = op.opcode | (reg_mode << 3);
 		op.opcode = op.opcode | (reg << 0);
@@ -234,6 +236,7 @@ void parser::opcode()
 			cout << std::oct << std::setfill('0') << std::setw(6) << expr;
 		}
 		cout << endl;
+		locationCounter += 2;
 		switch (returnNextToken())
 		{
 		case pNewLine:
@@ -246,8 +249,8 @@ void parser::opcode()
 		break;
 	case DOUBLE_OPERAND_1:
 	{
-		locationCounter += 2;
-		cout << "aDoubleOperand" << endl;
+		log(logDEBUG) << "aDoubleOperand";
+		cout << std::oct << std::setfill('0') << std::setw(6) << locationCounter << "\t";
 		operand();
 		op.opcode = op.opcode | (reg_mode << 9);
 		op.opcode = op.opcode | (reg << 6);
@@ -279,6 +282,7 @@ void parser::opcode()
 				cout << std::oct << std::setfill('0') << std::setw(6) << expr << "\t";
 			}
 			cout << endl;
+			locationCounter += 2;
 			switch (returnNextToken())
 			{
 			case pNewLine:
@@ -352,12 +356,12 @@ void parser::operand()
 			if (!deferredAddressing)
 			{
 				reg_mode = aRegisterMode;
-				cout << "aRegisterMode" << endl;
+				log(logDEBUG) << "aRegisterMode";
 			}
 			else
 			{
 				reg_mode = aRegisterDeferredMode;
-				cout << "aRegisterDeferredMode" << endl;
+				log(logDEBUG) << "aRegisterDeferredMode";
 			}
 			break;
 		default:
@@ -378,12 +382,12 @@ void parser::operand()
 				if (!deferredAddressing)
 				{
 					reg_mode = aAutoIncrementMode;
-					cout << "aAutoIncrementMode" << endl;
+					log(logDEBUG) << "aAutoIncrementMode";
 				}
 				else
 				{
 					reg_mode = aAutoIncrementDeferredMode;
-					cout << "aAutoIncrementDeferredMode" << endl;
+					log(logDEBUG) << "aAutoIncrementDeferredMode";
 				}
 				break;
 			default:
@@ -391,7 +395,7 @@ void parser::operand()
 				// immediately after expression
 				lineIndex--;
 				reg_mode = aRegisterDeferredMode;
-				cout << "aRegisterDeferredMode" << endl;
+				log(logDEBUG) << "aRegisterDeferredMode";
 			}
 			break;
 		default:
@@ -409,12 +413,12 @@ void parser::operand()
 				if (!deferredAddressing)
 				{
 					reg_mode = aAutoDecrementMode;
-					cout << "aAutoDecrementMode" << endl;
+					log(logDEBUG) << "aAutoDecrementMode";
 				}
 				else
 				{
 					reg_mode = aAutoDecrementDeferredMode;
-					cout << "aAutoDecrementDeferredMode" << endl;
+					log(logDEBUG) << "aAutoDecrementDeferredMode";
 				}
 				break;
 			default:
@@ -432,13 +436,13 @@ void parser::operand()
 		{
 			reg_mode = 2; // enum doesn't line up with number
 			reg = 7;
-			cout << "aImmediateMode" << endl;
+			log(logDEBUG) << "aImmediateMode";
 		}
 		else
 		{
 			reg_mode = 3; // enum doesn't line up with number
 			reg = 7;
-			cout << "aAbsoluteMode" << endl;
+			log(logDEBUG) << "aAbsoluteMode";
 		}
 		break;
 	default:
@@ -463,12 +467,12 @@ void parser::indexOrRelative()
 			if (!deferredAddressing)
 			{
 				reg_mode = aIndexMode;
-				cout << "aIndexMode" << endl;
+				log(logDEBUG) << "aIndexMode";
 			}
 			else
 			{
 				reg_mode = aIndexDeferredMode;
-				cout << "aIndexDeferredMode" << endl;
+				log(logDEBUG) << "aIndexDeferredMode";
 			}
 			break;
 		default:
@@ -484,13 +488,13 @@ void parser::indexOrRelative()
 		{
 			reg_mode = 6; // enum doesn't line up with number
 			reg = 7;
-			cout << "aRelativeMode" << endl;
+			log(logDEBUG) << "aRelativeMode";
 		}
 		else
 		{
 			reg_mode = 7; // enum doesn't line up with number
 			reg = 7;
-			cout << "aRelativeDeferredMode" << endl;
+			log(logDEBUG) << "aRelativeDeferredMode";
 		}
 	}
 }

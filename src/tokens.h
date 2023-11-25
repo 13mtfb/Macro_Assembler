@@ -32,7 +32,7 @@ enum scannerTokens
 	pDoubleASCII,				   // (""")
 	pSingleASCII,				   // ("'")
 	pUnary,						   // ("^")
-	pBackslash,					   // ("\")
+	pBackslash,					   // ("\\")
 	pNewLine,					   // ("\LF")
 	pEOF,
 	eIllegalChar

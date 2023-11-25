@@ -131,7 +131,6 @@ int main(int argc, char *argv[])
 				ScanTwo.clearCompoundTokens();
 			}
 		} while (currentToken != pEOF);
-		Parser.printUST();
 	}
 	// catch assembler errors
 	catch (errorType e)
