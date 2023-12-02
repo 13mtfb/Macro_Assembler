@@ -128,6 +128,8 @@ TEST(parserTest, double_operand_register_mode)
 TEST(parserTest, forward_assignment_complext)
 {
 
+    // TODO: Refactor to simplify this tests as it's much too complex
+    // but serves it's purpose well as a basic validation of the parser
     // Tests the following
     //  - expression parsing
     //  - forward assignment
@@ -141,7 +143,7 @@ TEST(parserTest, forward_assignment_complext)
     vector<vector<int>> test_lineTokens = {
         {pSymbol, pEqual, pSymbol, pNewLine},
         {pSymbol, pLeftBracket, pNumericLiteral, pPlus, pLeftBracket, pSymbol, pDivide, pNumericLiteral, pRightBracket, pRightBracket, pLeftParen, pSymbol, pRightParen, pNewLine},
-        {pSymbol, pEqual, pNumericLiteral, pNewLine}};
+        {pSymbol, pEqual, pPeriod, pNewLine}};
     vector<vector<string>> test_compoundTokens = {
         {"FOUR", "TEST"},
         {"INC", "3", "FOUR", "2", "R2"},
