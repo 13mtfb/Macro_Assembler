@@ -1,13 +1,13 @@
 # Macro_Assembler
 
-A C++ implementation of the Macro-11 Assembler by Digital Equipment Corporation ([Macro-11 Reference](https://bitsavers.org/pdf/dec/pdp11/rsx11m_s/RSX11M_V3.2_Jun79/3A_ProgramDevelopment/DEC-11-OIMRA-B-D_MACRO-11_Reference_Dec76.pdf)
+A C++ implementation of the Macro-11 Assembler by Digital Equipment Corporation ([Macro-11 Reference](https://bitsavers.org/pdf/dec/pdp11/rsx11m_s/RSX11M_V3.2_Jun79/3A_ProgramDevelopment/DEC-11-OIMRA-B-D_MACRO-11_Reference_197612.pdf)).
 
 ## Assembler Construction
 
 two pass assembler
 
 ### Pass 1
-	-Locate and read all required macros from libraries
+	-Locate and read all required macros from libraries - TODO
 	-Build symbol tables and program section tables
 	-Rudimentary assembling of each source statement
 
@@ -22,8 +22,7 @@ two pass assembler
 	-Generate assembly listing
 
 
-See [Documents](https://github.com/13mtfb/Macro_Assembler/tree/parser/documents) for information on Assembler Syntax and scanner/parser implementation.
-
+See [Documents](./documents/) for information on Assembler Syntax and scanner/parser implementation.
 
 
 ## Building
