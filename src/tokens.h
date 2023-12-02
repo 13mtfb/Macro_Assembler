@@ -5,6 +5,15 @@
 
 using namespace std;
 
+enum lineType
+{
+	lInstruction,
+	lLabel,
+	lAssignment,
+	lDirective,
+	lMacro,
+};
+
 enum scannerTokens
 {
 	pLabel, // (LABEL: -without the ":")

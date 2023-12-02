@@ -88,13 +88,12 @@ int main(int argc, char *argv[])
 				Scanner.clearCompoundTokens();
 			}
 		} while (currentToken != pEOF);
-		Parser.printUST();
 	}
 	// catch assembler errors
 	catch (errorType e)
 	{
 		cout << "Error: " << errorTokensASCII[e] << "(";
-		Scanner.printCurrentLine();
+		cout << Scanner.getCurrentLine();
 		cout << ")" << endl;
 	}
 	// catch program errors
@@ -107,6 +106,7 @@ int main(int argc, char *argv[])
 	// define another scan object to make sure
 	// scan scans same tokens
 	scanner ScanTwo(filename);
+	vector<int> parsed_output;
 
 	// pass - 2
 	try
@@ -121,22 +121,23 @@ int main(int argc, char *argv[])
 				// call parse object with lineTokens as input
 				compoundTokens = ScanTwo.returnCompoundTokens();
 
-				Parser.parse(lineTokens, compoundTokens);
+				parsed_output = Parser.parse(lineTokens, compoundTokens);
 
 				// output logging
 				output_debug(2, parse_file, lineTokens, compoundTokens, Parser);
-
+				Parser.printListingLine(ScanTwo.getCurrentLine(), ScanTwo.getCurrentLineNum());
 				// cleanup from previous line processing
 				lineTokens.clear();
 				ScanTwo.clearCompoundTokens();
 			}
 		} while (currentToken != pEOF);
+		Parser.printUST();
 	}
 	// catch assembler errors
 	catch (errorType e)
 	{
 		cout << "Error: " << errorTokensASCII[e] << "(";
-		ScanTwo.printCurrentLine();
+		cout << ScanTwo.getCurrentLine();
 		cout << ")" << endl;
 	}
 	// catch program errors

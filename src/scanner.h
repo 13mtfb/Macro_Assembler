@@ -14,7 +14,8 @@ public:
 	int scan();							   // returns next token in filestream
 	vector<string> returnCompoundTokens(); // returns vector of compound tokens
 	void clearCompoundTokens();			   // clears vector
-	void printCurrentLine();
+	string getCurrentLine();
+	int getCurrentLineNum();
 
 private:
 	fstream file;		 // file stream
@@ -28,4 +29,5 @@ private:
 	int NumericLiteralOrSymbol();
 	int Symbol();
 	void advanceChar();
+	int lineNum;
 };

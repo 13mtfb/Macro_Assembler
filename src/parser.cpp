@@ -19,14 +19,19 @@ parser::parser()
 	second_pass = false;
 }
 
-void parser::parse(vector<int> l, vector<string> c)
+vector<int> parser::parse(vector<int> l, vector<string> c)
 {
+	parsed.clear();
+	operands = queue<int>();
+
 	line = l;
 	compound = c;
 	lineIndex = -1;
 	compoundIndex = -1;
 	deferredAddressing = false;
 	statement();
+
+	return parsed;
 }
 
 void parser::statement()
@@ -34,6 +39,7 @@ void parser::statement()
 	switch (returnNextToken())
 	{
 	case pLabel:
+		lineType = lLabel;
 		// attempt to insert label into the UST
 		if (!second_pass)
 		{
@@ -49,6 +55,7 @@ void parser::statement()
 		}
 		break;
 	case pGlobalLabel:
+		lineType = lLabel;
 		if (!second_pass)
 		{
 			if (oPushLabel(returnNextCompound(), true))
@@ -66,14 +73,17 @@ void parser::statement()
 		switch (screener(returnNextCompound()))
 		{
 		case OPCODE:
+			lineType = lInstruction;
 			// screener loads variable 'opcode' with operator from PST
 			log(logDEBUG) << "parsed opcode";
 			opcode();
 			break;
 		case ASSEMBLERDIRECTIVE:
+			lineType = lDirective;
 			// TODO
 			break;
 		case MACROCALL:
+			lineType = lMacro;
 			// TODO
 			break;
 		case UNKNOWN:
@@ -82,6 +92,7 @@ void parser::statement()
 			{
 			case pEqual:
 			{
+				lineType = lAssignment;
 				string sym = returnCurrentCompound();
 				expr = expression();
 				oPushAssignment(sym, expr, false);
@@ -89,6 +100,7 @@ void parser::statement()
 			}
 			case pDoubleEqual:
 			{
+				lineType = lAssignment;
 				string sym = returnCurrentCompound();
 				expr = expression();
 				oPushAssignment(sym, expr, true);
@@ -211,6 +223,46 @@ void parser::printUST()
 	}
 }
 
+void parser::printListingLine(string sourceLine, int lineNum)
+{
+	// {lineNum}	[{location counter}]	[{instruction}]		{sourceLine}
+	//										[{operand1}]
+	//										[{operand2}]
+
+	cout << lineNum << "\t";
+
+	switch (lineType)
+	{
+	case lAssignment:
+	{
+		cout << "\t\t\t";
+		cout << sourceLine << "\n";
+	}
+	break;
+	case lInstruction:
+	{
+		cout << std::oct << std::setfill('0') << std::setw(6) << location_counter_current << "\t";
+		cout << std::oct << std::setfill('0') << std::setw(6) << instruction_current << "\t\t";
+		cout << sourceLine << "\n";
+		while (!operands.empty())
+		{
+			cout << "\t\t";
+			cout << std::oct << std::setfill('0') << std::setw(6) << operands.front();
+			cout << "\n";
+			// remove from queue
+			operands.pop();
+		}
+	}
+	break;
+	default:
+	{
+		cout << std::oct << std::setfill('0') << std::setw(6) << location_counter_current;
+		cout << "\t\t";
+		cout << sourceLine << "\n";
+	}
+	}
+}
+
 void parser::setPassTwo()
 {
 	second_pass = true;
@@ -225,17 +277,19 @@ void parser::opcode()
 	{
 	case SINGLE_OPERAND:
 		log(logDEBUG) << "aSingleOperand";
-		cout << std::oct << std::setfill('0') << std::setw(6) << locationCounter << "\t";
+		location_counter_current = locationCounter;
+		parsed.push_back(location_counter_current);
 		operand();
 		op.opcode = op.opcode | (reg_mode << 3);
 		op.opcode = op.opcode | (reg << 0);
-		cout << std::oct << std::setfill('0') << std::setw(6) << op.opcode << "\t";
+		instruction_current = op.opcode;
+		parsed.push_back(instruction_current);
 		// TODO: Remove super ugly way to print operand
 		if (reg == 7 || reg_mode == 6 || reg_mode == 7)
 		{
-			cout << std::oct << std::setfill('0') << std::setw(6) << expr;
+			parsed.push_back(expr);
+			operands.push(expr);
 		}
-		cout << endl;
 		locationCounter += 2;
 		switch (returnNextToken())
 		{
@@ -250,7 +304,8 @@ void parser::opcode()
 	case DOUBLE_OPERAND_1:
 	{
 		log(logDEBUG) << "aDoubleOperand";
-		cout << std::oct << std::setfill('0') << std::setw(6) << locationCounter << "\t";
+		location_counter_current = locationCounter;
+		parsed.push_back(location_counter_current);
 		operand();
 		op.opcode = op.opcode | (reg_mode << 9);
 		op.opcode = op.opcode | (reg << 6);
@@ -270,18 +325,19 @@ void parser::opcode()
 			operand();
 			op.opcode = op.opcode | (reg_mode << 3);
 			op.opcode = op.opcode | (reg << 0);
-			cout << std::oct << std::setfill('0') << std::setw(6) << op.opcode << "\t";
+			instruction_current = op.opcode;
+			parsed.push_back(instruction_current);
 			// TODO: Remove super ugly way to print double-operand instructions
 			if (print1)
 			{
-				cout << std::oct << std::setfill('0') << std::setw(6) << expr1 << "\t";
+				parsed.push_back(expr1);
+				operands.push(expr1);
 			}
 			if (reg == 7 || reg_mode == 6 || reg_mode == 7)
 			{
-				// TODO: Increment location counter?
-				cout << std::oct << std::setfill('0') << std::setw(6) << expr << "\t";
+				parsed.push_back(expr);
+				operands.push(expr);
 			}
-			cout << endl;
 			locationCounter += 2;
 			switch (returnNextToken())
 			{

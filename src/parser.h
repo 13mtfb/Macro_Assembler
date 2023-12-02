@@ -12,9 +12,10 @@ class parser
 public:
 	parser(); // constructs a parser object
 	int screener(string symbol);
-	void parse(vector<int> line, vector<string> compound);
+	vector<int> parse(vector<int> line, vector<string> compound);
 	void printUST();
 	void setPassTwo();
+	void printListingLine(string, int);
 
 private:
 	// parse methods
@@ -31,8 +32,15 @@ private:
 	int reg;
 	int reg_mode;
 	int expr;
-
 	int sym_val;
+
+	// listing data
+	int location_counter_current;
+	int lineType;
+	int instruction_current;
+	queue<int> operands;
+
+	vector<int> parsed;
 
 	//// UTILITY METHODS ////
 	int returnCurrentToken();

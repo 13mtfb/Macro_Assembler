@@ -16,6 +16,7 @@ scanner::scanner(string filepath)
 		throw runtime_error("Could not open file");
 	}
 	getline(file, current_line);
+	lineNum = 1;
 	current_position = -1;
 	// handle edge case where file only contains one line
 	if (file.eof())
@@ -39,6 +40,7 @@ int scanner::scan()
 	if (current_position > current_line.length())
 	{ // cEOF
 		getline(file, current_line);
+		lineNum++;
 		current_position = 0;
 		if (file.eof())
 		{
@@ -198,9 +200,14 @@ void scanner::clearCompoundTokens()
 	compoundTokens.clear();
 }
 
-void scanner::printCurrentLine()
+string scanner::getCurrentLine()
 {
-	cout << current_line;
+	return current_line;
+}
+
+int scanner::getCurrentLineNum()
+{
+	return lineNum;
 }
 
 //// PRIVATE METHODS ////
