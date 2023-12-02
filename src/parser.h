@@ -17,6 +17,9 @@ public:
 	void setPassTwo();
 	void printListingLine(string, int);
 
+	// testing methods
+	int returnSymbol(string);
+
 private:
 	// parse methods
 	void statement();

@@ -4,7 +4,9 @@
         "iostream": "cpp",
         "__bit_reference": "cpp",
         "string": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "vector": "cpp",
+        "unordered_map": "cpp"
     },
     "editor.formatOnSave": true,
     "cmake.configureOnOpen": true,

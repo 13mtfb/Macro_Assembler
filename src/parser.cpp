@@ -223,6 +223,11 @@ void parser::printUST()
 	}
 }
 
+int parser::returnSymbol(string symbol)
+{
+	return UST.at(symbol).value;
+}
+
 void parser::printListingLine(string sourceLine, int lineNum)
 {
 	// {lineNum}	[{location counter}]	[{instruction}]		{sourceLine}
